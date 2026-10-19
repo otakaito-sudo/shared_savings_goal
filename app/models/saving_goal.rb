@@ -5,7 +5,7 @@ class SavingGoal < ApplicationRecord
   has_many :users, through: :memberships
   has_many :deposits, dependent: :destroy
 
-  enum :status, { recruiting: 0, archieced: 1, canceled: 2 }
+  enum :status, { recruiting: 0, achieved: 1, canceled: 2 }
 
   validates :name, presence: true, length: { maximum: 100 }
   validates :target_amount, numericality: { only_integer: true, greater_than: 0 }
@@ -28,6 +28,6 @@ class SavingGoal < ApplicationRecord
 
   def deadline_cannnot_be_past
     return if deadline.blank?
-    errors.add(:deadline, "歯本日以降の日付にしてください") if deadline < Date.current
+    errors.add(:deadline, "は本日以降の日付にしてください") if deadline < Date.current
   end
 end

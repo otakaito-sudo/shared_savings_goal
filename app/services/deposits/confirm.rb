@@ -1,20 +1,10 @@
 module Deposits
-  class Confirm
-    class Error < StandardError; end
-    class NotAuthorized < Error; end
-    class NotPending < Error; end
-    class ExceedsTarget < Error; end
-
-    def initialize(deposit:, reviewer:)
-      @deposit  = deposit
-      @reviewer = reviewer
-    end
-
+  class Confirm < Base
     def call
       ActiveRecord::Base.transaction do
         goal = SavingGoal.lock.find(@deposit.saving_goal_id)
 
-        authorize!(goal)
+        authorize!
         raise NotPending unless @deposit.reload.pending?
 
         confirmed_total = goal.deposits.confirmed.sum(:request_amount)
@@ -31,13 +21,6 @@ module Deposits
 
         @deposit
       end
-    end
-
-    private
-
-    def authorize!(goal)
-      membership = Membership.find_by(saving_goal_id: goal.id, user_id: @reviewer.id)
-      raise NotAuthorized unless membership&.manager?
     end
   end
 end

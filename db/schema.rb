@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_14_023355) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_19_042725) do
   create_table "deposits", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "request_amount", null: false
     t.bigint "member_id", null: false
@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_023355) do
     t.integer "lock_version", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "review_comment"
     t.index ["member_id"], name: "index_deposits_on_member_id"
     t.index ["reviewed_by_id"], name: "index_deposits_on_reviewed_by_id"
     t.index ["saving_goal_id", "member_id"], name: "index_deposits_on_saving_goal_id_and_member_id"
