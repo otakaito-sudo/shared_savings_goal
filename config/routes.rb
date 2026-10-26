@@ -20,4 +20,6 @@ Rails.application.routes.draw do
       patch :resubmit
     end
   end
+
+  resources :account_activations, only: [ :edit ]
 end
