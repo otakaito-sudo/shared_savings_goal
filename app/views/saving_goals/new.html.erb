@@ -1,0 +1,11 @@
+<h1>貯金目標の作成</h1>
+<%= form_with model: @goal do |f| %>
+    <% if @goal.errors.any? %>
+        <ul><% @goal.errors.full_messages.each do |m| %><li><%= m %></li><% end %>
+    <% end %>
+    <%= f.label :name, "目標名" %><%= f.text_field :name %>
+    <%= f.label :purpose, "目的" %><%= f.text_field :name %>
+    <%= f.label :target_amount, "目標金額" %><%= f.number_field :target_amount %>
+    <%= f.label :deadline, "期限" %><%= f.date_field :deadline %>
+    <%= f.submit "作成" %>
+<% end %>

@@ -1,0 +1,68 @@
+<h1><%= @goal.name %></h1>
+<p><%= @goal.purpose %></p>
+<p>
+    <%= number_to_currency(@goal.current_amount, unit: "¥", precision: 0) %> / <%= number_to_currency(@goal.target_amount, unit: "¥", precision: 0) %>
+        (残り <%= number_to_currency(@goal.remaining_amount, unit: "¥", precision: 0) %>)
+</p>
+<p>期限: <%= l @goal.deadline %> / 状態: <%= t("goals.status.#{@goal.status}", locale: :ja) %></p>
+
+<h2>参加メンバー</h2>
+<ul>
+    <% @goal.memberships.includes(:user).each do |m| %>
+        <li>
+            <%= m.user.name %> (<%= m.role %>) 
+            <% if @membership&.manager? && m.user != current_user %>
+                <%= button_to "外す", saving_goal_membership_path(@goal, m),
+                    method: :delete, form: {data: {turbo_confirm: "外しますか？"}} %>
+            <% end %>
+        </li>
+    <% end %>
+</ul>
+
+<% if @membership&.manager? %>
+    <%= form_with url: saving_goal_memberships_path(@goal) do |f| %>
+        <%= f.email_field :email, placeholder: "追加する人のメールアドレス" %>
+        <%= f.select :role, [["メンバー", "member"], ["管理者", "manager"]] %>
+        <%= f.submit "追加" %>
+    <% end %>
+<% end %>
+
+<% if @goal.accepting_deposits? %>
+    <h2>入金を申請</h2>
+    <%= form_with model: [@goal, @deposit] do |f| %>
+        <%= f.number_field :request_amount %>
+        <%= f.submit "申請する" %>
+    <% end %>
+<% end %>
+
+<h2>入金申請一覧</h2>
+<table>
+    <tr><th>申請者</th><th>金額</th><th>状態</th><th>確認者</th><th>操作</th></tr>
+    <% @deposits.each do |d| %>
+        <tr>
+            <td><%= d.member.name %></td>
+            <td><%= number_to_currency(d.request_amount, unit: "¥", precision: 0) %></td>
+            <td>
+                <%= t("deposits.status.#{d.status}", locale: :ja) %>
+                <% if d.remanded? %><br><small><%= d.review_comment %></small><% end %>
+            </td>
+            <td><%= d.reviewer&.name %></td>
+            <td>
+                <% if d.pending? && @membership&.manager? %>
+                    <%= button_to "確認", confirm_deposit_path(d), method: :patch %>
+                    <%= button_to "却下", reject_deposit_path(d), method: :patch %>
+                    <%= form_with url: remand_deposit_path(d), method: :patch do |f| %>
+                        <%= f.text_field :review_comment, placeholder: "差し戻し理由" %>
+                        <%= f.submit "差し戻し" %>
+                    <% end %>
+                <% end %>
+                <% if d.remanded? && d.member == current_user %>
+                    <%= form_with url: resubmit_deposit_path(d), method: :patch do |f| %>
+                        <%= f.number_field :request_amount, value: d.request_amount %>
+                        <%= f.submit "再申請" %>
+                    <% end %>
+                <% end %>
+            </td>
+        </tr>
+    <% end %>
+</table>

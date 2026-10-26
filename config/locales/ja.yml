@@ -1,0 +1,12 @@
+ja:
+  deposits:
+    status:
+      pending: 確認待ち
+      confirmed: 確認済み
+      rejected: 却下
+      remanded: 差し戻し
+  goals:
+    status:
+      recruiting: 募集中
+      achieved: 達成
+      canceled: 中止

@@ -1,0 +1,12 @@
+<h1>貯金目標</h1>
+<%= link_to "新規作成", new_saving_goal_path %>
+
+<ul>
+    <% @goals.each do |goal| %>
+        <li>
+            <%= link_to goal.name, goal %>
+            <%= number_to_currency(goal.current_amount, unit:"¥", precision: 0) %> / <%= number_to_currency(goal.target_amount, unit:"¥", precision: 0) %>
+            <span>[<%= t("goals.status.#{goal.status}", locale: :ja) %>]</span>
+        </li>
+    <% end %>
+</ul>
