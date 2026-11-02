@@ -26,4 +26,11 @@ module ActiveSupport
       Membership.create!(saving_goal: goal, user: user, role: role)
     end
   end
+
+  class ActionDispatch::IntegrationTest
+    # 　テストの中でログインする
+    def log_in_as(user, password: "foobar")
+      post login_path, params: { email: user.email, password: password }
+    end
+  end
 end
