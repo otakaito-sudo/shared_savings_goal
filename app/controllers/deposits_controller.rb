@@ -5,10 +5,10 @@ class DepositsController < ApplicationController
     goal=current_user.saving_goals.find(params[:saving_goal_id])
     deposit=goal.deposits.new(deposit_params.merge(member: current_user))
 
-    if deposit.save!
+    if deposit.save
       redirect_to goal, notice: "入金を申請しました"
     else
-      redirect_to goal, alert: deposit.errors.full_message.to_sentence
+      redirect_to goal, alert: deposit.errors.full_messages.to_sentence
     end
   end
 
@@ -31,7 +31,7 @@ class DepositsController < ApplicationController
   private
 
   def deposit
-    @deposit ||= Deposit.find(params[:id])
+    @deposit ||= Deposit.where(saving_goal: current_user.saving_goals).find(params[:id])
   end
 
   def deposit_params
@@ -51,5 +51,7 @@ class DepositsController < ApplicationController
     redirect_to deposit.saving_goal, alert: "差し戻し理由を入力してください"
   rescue ActiveRecord::StaleObjectError
     redirect_to deposit.saving_goal, alert: "他の操作と競合しました。やり直してください"
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to deposit.saving_goal, alert: e.record.errors.full_messages.to_sentence
   end
 end

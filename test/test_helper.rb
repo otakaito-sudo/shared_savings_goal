@@ -32,5 +32,11 @@ module ActiveSupport
     def log_in_as(user, password: "foobar")
       post login_path, params: { email: user.email, password: password }
     end
+
+    def create_activated_user(name, email)
+      user=User.create!(name: name, email: email, password: "foobar")
+      user.update_columns(activated: true, activated_at: Time.zone.now)
+      user
+    end
   end
 end

@@ -1,10 +1,10 @@
 <h1><%= @goal.name %></h1>
 <p><%= @goal.purpose %></p>
 <p>
-    <%= number_to_currency(@goal.current_amount, unit: "¥", precision: 0) %> / <%= number_to_currency(@goal.target_amount, unit: "¥", precision: 0) %>
-        (残り <%= number_to_currency(@goal.remaining_amount, unit: "¥", precision: 0) %>)
+    <%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %> / <%= number_to_currency(@goal.target_amount, unit: "円", precision: 0) %>
+        (残り <%= number_to_currency(@goal.remaining_amount, unit: "円", precision: 0) %>)
 </p>
-<p>期限: <%= l @goal.deadline %> / 状態: <%= t("goals.status.#{@goal.status}", locale: :ja) %></p>
+<p>期限: <%= @goal.deadline %> / 状態: <%= t("goals.status.#{@goal.status}", locale: :ja) %></p>
 
 <h2>参加メンバー</h2>
 <ul>
@@ -41,7 +41,7 @@
     <% @deposits.each do |d| %>
         <tr>
             <td><%= d.member.name %></td>
-            <td><%= number_to_currency(d.request_amount, unit: "¥", precision: 0) %></td>
+            <td><%= number_to_currency(d.request_amount, unit: "円", precision: 0) %></td>
             <td>
                 <%= t("deposits.status.#{d.status}", locale: :ja) %>
                 <% if d.remanded? %><br><small><%= d.review_comment %></small><% end %>

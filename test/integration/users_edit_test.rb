@@ -6,12 +6,6 @@ class UsersEditTest < ActionDispatch::IntegrationTest
     @other=create_activated_user("Taro", "taro@example.com")
   end
 
-  def create_activated_user(name, email)
-    user=User.create!(name: name, email: email, password: "foobar")
-    user.update_columns(activated: true, activated_at: Time.zone.now)
-    user
-  end
-
   test "ログインしていないと編集画面を開けない" do
     get edit_user_path(@user)
     assert_redirected_to login_path

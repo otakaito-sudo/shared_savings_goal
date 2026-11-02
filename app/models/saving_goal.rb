@@ -8,7 +8,8 @@ class SavingGoal < ApplicationRecord
   enum :status, { recruiting: 0, achieved: 1, canceled: 2 }
 
   validates :name, presence: true, length: { maximum: 100 }
-  validates :target_amount, numericality: { only_integer: true, greater_than: 0 }
+  validates :target_amount, numericality: { only_integer: true, greater_than: 0, message: "は0より大きい値にしてください" }
+  validates :target_amount, numericality: { less_than_or_equal_to: 100_000_000, message: "1億円以下にしてください" }
   validates :deadline, presence: true
   validate  :deadline_cannnot_be_past, on: :create
 

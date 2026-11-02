@@ -5,7 +5,7 @@
     <% @goals.each do |goal| %>
         <li>
             <%= link_to goal.name, goal %>
-            <%= number_to_currency(goal.current_amount, unit:"¥", precision: 0) %> / <%= number_to_currency(goal.target_amount, unit:"¥", precision: 0) %>
+            <%= number_to_currency(goal.current_amount, unit:"円", precision: 0) %> / <%= number_to_currency(goal.target_amount, unit:"円", precision: 0) %>
             <span>[<%= t("goals.status.#{goal.status}", locale: :ja) %>]</span>
         </li>
     <% end %>

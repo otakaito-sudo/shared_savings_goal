@@ -7,7 +7,8 @@ class Deposit < ApplicationRecord
   enum :status, { pending: 0, confirmed: 1, rejected: 2, remanded: 3 }
 
   validates :request_amount,
-            numericality: { only_integer: true, greater_than: 0 }
+            numericality: { only_integer: true, greater_than: 0, message: "は0より大きい値にしてください" }
+  validate :request_amount_within_target
   validate :member_must_participate
   validate :goal_must_accept_deposits, on: :create
 
@@ -22,6 +23,12 @@ class Deposit < ApplicationRecord
   end
 
   private
+
+  def request_amount_within_target
+    return if request_amount.blank? || saving_goal.blank?
+    return if request_amount <= saving_goal.target_amount
+    errors.add(:request_amount, "は目標金額以下にしてください")
+  end
 
   def member_must_participate
     return if saving_goal_id.blank? || member_id.blank?
