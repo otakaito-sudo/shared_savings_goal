@@ -14,4 +14,8 @@ class ApplicationController < ActionController::Base
   def require_login
     redirect_to login_path, alert: "ログインしてください" unless logged_in?
   end
+
+  def require_logout
+    redirect_to root_path, notice: "すでにログインしています" if logged_in?
+  end
 end

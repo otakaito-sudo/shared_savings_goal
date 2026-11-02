@@ -14,7 +14,7 @@ class User < ApplicationRecord
                     uniqueness: true
   validates :password, length: { minimum: 6 }, allow_nil: true
 
-  attr_accessor :activation_token
+  attr_accessor :activation_token, :reset_token
   before_create :create_activation_digest
 
   # 文字列をハッシュ化する
@@ -28,10 +28,32 @@ class User < ApplicationRecord
     SecureRandom.urlsafe_base64
   end
 
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
+  end
+
+  def resend_activation_email
+    create_activation_digest
+    update_column(:activation_digest, activation_digest)
+    send_activation_email
+  end
+
+  def create_reset_digest
+    self.reset_token=User.new_token
+    update_columns(reset_digest: User.digest(reset_token), reset_sent_at: Time.zone.now)
+  end
+  def send_password_reset_email
+    UserMailer.password_reset(self).deliver_now
+  end
+
   def authenticated?(attribute, token)
     digest=send("#{attribute}_digest")
     return false if digest.nil?
     BCrypt::Password.new(digest).is_password?(token)
+  end
+
+  def password_reset_expired?
+    self.reset_sent_at < 2.hours.ago
   end
 
   private
