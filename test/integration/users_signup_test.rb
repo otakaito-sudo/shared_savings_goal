@@ -38,4 +38,26 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     assert user.reload.activated?
     assert_equal user.id, session[:user_id]
   end
+
+  test "24時間を過ぎた有効化リンクは使えず、ログインすると再送される" do
+    post users_path, params: { user: { name: "Test", email: "test@example.com", password: "foobar" } }
+    user=User.find_by(email: "test@example.com")
+    old_token=token_from(ActionMailer::Base.deliveries.last)
+
+    travel 25.hours do
+      # 期限切れのリンクでは有効化できない
+      get edit_account_activation_path(old_token, email: user.email)
+      assert_redirected_to login_path
+      assert_not user.reload.activated?
+
+      # ログインすると新しいメールが届く
+      log_in_as(user)
+      new_token=token_from(ActionMailer::Base.deliveries.last)
+      assert_not_equal old_token, new_token
+
+      # 新しいリンクなら有効化できる
+      get edit_account_activation_path(new_token, email: user.email)
+      assert user.reload.activated?
+    end
+  end
 end

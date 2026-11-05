@@ -1,4 +1,4 @@
 <h1><%= @user.name %> さん</h1>
 <p>共有貯金アプリへの登録ありがとうございます。</p>
-<p>次のリンクからアカウントを有効化してください</p>
+<p>次のリンクから24時間以内にアカウントを有効化してください。</p>
 <%= link_to "アカウントを有効化する", edit_account_activation_url(@user.activation_token, email: @user.email) %>

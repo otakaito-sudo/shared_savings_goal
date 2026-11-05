@@ -34,14 +34,19 @@ class User < ApplicationRecord
 
   def resend_activation_email
     create_activation_digest
-    update_column(:activation_digest, activation_digest)
+    update_columns(activation_digest: activation_digest, activation_sent_at: activation_sent_at)
     send_activation_email
+  end
+
+  def activation_expired?
+    activation_sent_at.nil? || activation_sent_at < 24.hours.ago
   end
 
   def create_reset_digest
     self.reset_token=User.new_token
     update_columns(reset_digest: User.digest(reset_token), reset_sent_at: Time.zone.now)
   end
+
   def send_password_reset_email
     UserMailer.password_reset(self).deliver_now
   end
@@ -70,5 +75,6 @@ class User < ApplicationRecord
   def create_activation_digest
     self.activation_token=User.new_token
     self.activation_digest=User.digest(activation_token)
+    self.activation_sent_at=Time.zone.now
   end
 end

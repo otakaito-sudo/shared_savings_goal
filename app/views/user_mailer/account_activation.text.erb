@@ -1,6 +1,6 @@
 <%= @user.name %> さん
 
 共有貯金アプリへの登録ありがとうございます。
-次のリンクからアカウントを有効化してください
+次のリンクから24時間以内にアカウントを有効化してください。
 
 <%= edit_account_activation_url(@user.activation_token, email: @user.email) %>

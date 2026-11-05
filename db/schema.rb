@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_05_025318) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_05_042619) do
   create_table "deposits", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "request_amount", null: false
     t.bigint "member_id", null: false
@@ -68,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_025318) do
     t.string "reset_digest"
     t.datetime "reset_sent_at"
     t.string "remember_digest"
+    t.datetime "activation_sent_at"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
