@@ -14,7 +14,7 @@ class User < ApplicationRecord
                     uniqueness: true
   validates :password, length: { minimum: 6 }, allow_nil: true
 
-  attr_accessor :activation_token, :reset_token
+  attr_accessor :activation_token, :reset_token, :remember_token
   before_create :create_activation_digest
 
   # 文字列をハッシュ化する
@@ -54,6 +54,15 @@ class User < ApplicationRecord
 
   def password_reset_expired?
     self.reset_sent_at < 2.hours.ago
+  end
+
+  def remember
+    self.remember_token=User.new_token
+    update_column(:remember_digest, User.digest(remember_token))
+  end
+
+  def forget
+    update_column(:remember_digest, nil)
   end
 
   private

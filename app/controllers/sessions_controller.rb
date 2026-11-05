@@ -8,10 +8,11 @@ class SessionsController < ApplicationController
       if user.activated?
         reset_session
         session[:user_id]=user.id
+        params[:remember_me]== "1" ? remember(user) : forget(user)
         redirect_to root_path, notice: "ログインしました"
       else
         user.resend_activation_email
-        redirect_to login_path, notice: "メールを送ったのでアカウントを有効化してください"
+        redirect_to login_path, alert: "アカウントが有効化されていません。確認メールを再送したので、リンクから有効化してください"
       end
     else
       flash.now[:alert]="メールアドレスまたはパスワードが違います"
@@ -20,7 +21,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session.delete(:user_id)
+    log_out if logged_in?
     redirect_to login_path, notice: "ログアウトしました"
   end
 end

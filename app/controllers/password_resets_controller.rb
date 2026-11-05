@@ -23,6 +23,7 @@ class PasswordResetsController < ApplicationController
       @user.errors.add(:password, "を入力してください")
       render :edit, status: :unprocessable_entity
     elsif @user.update(user_params)
+      forget(@user)
       @user.update_column(:reset_digest, nil)
       reset_session
       session[:user_id]=@user.id

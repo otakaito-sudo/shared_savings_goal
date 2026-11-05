@@ -29,8 +29,8 @@ module ActiveSupport
 
   class ActionDispatch::IntegrationTest
     # 　テストの中でログインする
-    def log_in_as(user, password: "foobar")
-      post login_path, params: { email: user.email, password: password }
+    def log_in_as(user, password: "foobar", remember_me: "0")
+      post login_path, params: { email: user.email, password: password, remember_me: remember_me }
     end
 
     def create_activated_user(name, email)
