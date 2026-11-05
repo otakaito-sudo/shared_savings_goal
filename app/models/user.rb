@@ -16,6 +16,7 @@ class User < ApplicationRecord
 
   attr_accessor :activation_token, :reset_token, :remember_token
   before_create :create_activation_digest
+  ACTIVATION_RESEND_INTERVAL=5.minutes
 
   # 文字列をハッシュ化する
   def self.digest(string)
@@ -33,9 +34,12 @@ class User < ApplicationRecord
   end
 
   def resend_activation_email
+    return false if activation_sent_at.present? && activation_sent_at > ACTIVATION_RESEND_INTERVAL.ago
+
     create_activation_digest
     update_columns(activation_digest: activation_digest, activation_sent_at: activation_sent_at)
     send_activation_email
+    true
   end
 
   def activation_expired?

@@ -1,5 +1,10 @@
 class PasswordResetsController < ApplicationController
   before_action :require_logout
+  rate_limit to: 5, within: 15.minutes, only: :create, name: "by-ip",
+             with: -> { redirect_to new_password_reset_path, alert: "リクエストが多過ぎます。しばらくしてからお試しください" }
+  rate_limit to: 3, within: 15.minutes, only: :create, name: "by-email",
+             by: -> { params[:email].to_s.strip.downcase },
+             with: -> { redirect_to new_password_reset_path, alert: "リクエストが多過ぎます。しばらくしてからお試しください" }
   before_action :get_user, only: [ :edit, :update ]
   before_action :valid_user, only: [ :edit, :update ]
   before_action :check_expiration, only: [ :edit, :update ]
