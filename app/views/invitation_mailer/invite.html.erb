@@ -1,0 +1,5 @@
+<p><%= @invitation.invited_by.name %> さんから、共有貯金「<%= @goal.name %>」への招待が届いています。</p>
+<p>このメールアドレスで登録・有効化したアカウントでログインしてから、次のリンクを開いてください。</p>
+<p><%= link_to "招待を確認する", @url %></p>
+<p>有効期限：<%= l @invitation.expires_at, format: :long rescue @invitation.expires_at %></p>
+<p>心当たりがない場合はこのメールを無視してください</p>

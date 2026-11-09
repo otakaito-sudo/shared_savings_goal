@@ -49,14 +49,14 @@ class GoalAuthorizationTest < ActionDispatch::IntegrationTest
     assert @deposit.reload.confirmed?
   end
 
-  test "定義にないroleではメンバーを追加できない" do
-    log_in_as(@manager)
-    assert_no_difference "Membership.count" do
-      post saving_goal_memberships_path(@goal), params: { email: @outsider.email, role: "admin" }
-    end
-    assert_redirected_to saving_goal_path(@goal)
-    assert_not_nil flash[:alert]
-  end
+  # test "定義にないroleではメンバーを追加できない" do
+  #   log_in_as(@manager)
+  #   assert_no_difference "Membership.count" do
+  #     post saving_goal_memberships_path(@goal), params: { email: @outsider.email, role: "admin" }
+  #   end
+  #   assert_redirected_to saving_goal_path(@goal)
+  #   assert_not_nil flash[:alert]
+  # end
 
   test "最後の管理者は外せない" do
     log_in_as(@manager)

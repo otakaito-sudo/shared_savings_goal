@@ -3,19 +3,6 @@ class MembershipsController < ApplicationController
   before_action :set_goal
   before_action :require_manager
 
-  def create
-    user=User.find_by(email: params[:email].to_s.strip.downcase)
-    return redirect_to @goal, alert: "そのメールアドレスのユーザーが見つかりません" if user.nil?
-
-    membership = @goal.memberships.new(user: user, role: params[:role].presence || "member")
-
-    if membership.save
-      redirect_to @goal, notice: "#{user.name} さんを追加しました"
-    else
-      redirect_to @goal, alert: membership.errors.full_messages.to_sentence
-    end
-  end
-
   def destroy
     membership=@goal.memberships.find(params[:id])
 

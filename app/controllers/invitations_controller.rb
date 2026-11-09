@@ -24,7 +24,7 @@ class InvitationsController < ApplicationController
       elsif @goal.memberships.exists?(user_id: current_user.id)
         result = :already_member
       else
-        @goal.memberships.create!(user: current_user, role: "member")
+        @goal.memberships.create!(user: current_user, role: :member)
         @invitation.update!(accepted_at: Time.current)
         result= :accepted
       end
@@ -65,7 +65,7 @@ class InvitationsController < ApplicationController
     current_user.email==@invitation.email &&
     @invitation.active? &&
     @invitation.authenticated?(token) &&
-    @goal.recruiting?
+    @goal.open?
   end
 
   def invalid_invitation

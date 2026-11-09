@@ -4,7 +4,7 @@
     <%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %> / <%= number_to_currency(@goal.target_amount, unit: "円", precision: 0) %>
         (残り <%= number_to_currency(@goal.remaining_amount, unit: "円", precision: 0) %>)
 </p>
-<p>期限: <%= @goal.deadline %> / 状態: <%= t("goals.status.#{@goal.status}", locale: :ja) %></p>
+<p>期限: <%= @goal.deadline %> / 状態: <%= t("goals.status.#{@goal.display_status}", locale: :ja) %></p>
 
 <h2>参加メンバー</h2>
 <ul>
@@ -19,12 +19,11 @@
     <% end %>
 </ul>
 
-<% if @membership&.manager? %>
-    <%= form_with url: saving_goal_memberships_path(@goal) do |f| %>
-        <%= f.email_field :email, placeholder: "追加する人のメールアドレス" %>
-        <%= f.select :role, [["メンバー", "member"], ["管理者", "manager"]] %>
-        <%= f.submit "追加" %>
-    <% end %>
+<% if @membership&.manager? && @goal.open? %>
+  <%= form_with url: saving_goal_invitations_path(@goal) do |f| %>
+    <%= f.email_field :email, placeholder: "招待する人のメールアドレス", required: true %>
+    <%= f.submit "招待メールを送る" %>
+  <% end %>
 <% end %>
 
 <% if @goal.accepting_deposits? %>

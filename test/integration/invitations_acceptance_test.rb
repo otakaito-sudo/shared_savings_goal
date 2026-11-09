@@ -138,4 +138,14 @@ class InvitationsAcceptanceTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to saving_goal_path(@goal)
   end
+
+  test "期限を過ぎた目標には参加できない" do
+    log_in_as(@invitee)
+    @goal.update_columns(deadline: Date.yesterday)
+
+    assert_no_difference "Membership.count" do
+      post accept_invitation_path(@invitation), params: { token: @token }
+    end
+    assert_redirected_to root_path
+  end
 end

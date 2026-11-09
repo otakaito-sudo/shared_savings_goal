@@ -6,7 +6,7 @@
         <li>
             <%= link_to goal.name, goal %>
             <%= number_to_currency(goal.current_amount, unit:"円", precision: 0) %> / <%= number_to_currency(goal.target_amount, unit:"円", precision: 0) %>
-            <span>[<%= t("goals.status.#{goal.status}", locale: :ja) %>]</span>
+            <span>[<%= t("goals.status.#{goal.display_status}", locale: :ja) %>]</span>
         </li>
     <% end %>
 </ul>

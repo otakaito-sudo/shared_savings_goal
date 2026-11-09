@@ -33,6 +33,29 @@ class SavingGoalTest < ActiveSupport::TestCase
     assert_equal 2_000, goal.current_amount
   end
 
+test "期限日の当日までは受付中で、翌日から締め切る" do
+  goal = create_goal(creator: create_user(email: "deadline-#{SecureRandom.hex(4)}@example.com"))
+  goal.update_columns(deadline: Date.current)
+
+  assert goal.open?
+  assert_equal :recruiting, goal.display_status
+
+  travel 1.day do
+    assert goal.deadline_passed?
+    assert_not goal.open?
+    assert_not goal.accepting_deposits?
+    assert_equal :expired, goal.display_status
+  end
+end
+
+test "中止した目標は期限内でも受け付けない" do
+  goal = create_goal(creator: create_user(email: "canceled-#{SecureRandom.hex(4)}@example.com"))
+  goal.update!(status: :canceled)
+
+  assert_not goal.open?
+  assert_equal :canceled, goal.display_status
+end
+
   private
 
   def build(**attrs)

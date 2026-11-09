@@ -22,8 +22,23 @@ class SavingGoal < ApplicationRecord
     target_amount - current_amount
   end
 
+  def deadline_passed?
+    deadline.present? && deadline < Date.current
+  end
+
+  # 募集中かつ期限内=新しい参加・入金を受け付ける状態
+  def open?
+    recruiting? && !deadline_passed?
+  end
+
   def accepting_deposits?
-    recruiting?
+    open?
+  end
+
+  # 画面表示用の状態(DBのstatusは買えない)
+  def display_status
+    return :expired if recruiting? && deadline_passed?
+    status.to_sym
   end
 
   private

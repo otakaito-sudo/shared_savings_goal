@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   resources :saving_goals, only: [ :index, :show, :new, :create ] do
     resources :memberships, only: [ :create, :destroy ]
+    resources :invitations, only: [ :create ], module: :saving_goals
     resources :deposits, only: [ :create ]
   end
 
