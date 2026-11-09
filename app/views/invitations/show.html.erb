@@ -1,0 +1,16 @@
+<h1>メンバー招待</h1>
+
+<p>
+    <%= @invitation.invited_by.name %> さんから
+    「<%= @goal.name %>」への招待が届いています
+</p>
+
+<p>招待先：<%= @invitation.email %></p>
+<p>有効期限：<%= @invitation.expires_at %></p>
+
+<%= form_with url: accept_invitation_path(@invitation), method: :post do |f| %>
+    <%= hidden_field_tag :token, params[:token] %>
+    <%= f.submit "招待を承諾する" %>
+<% end %>
+
+<%= link_to "戻る", root_path %>

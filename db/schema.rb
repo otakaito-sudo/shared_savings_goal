@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_05_042619) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_05_074122) do
   create_table "deposits", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "request_amount", null: false
     t.bigint "member_id", null: false
@@ -28,6 +28,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_042619) do
     t.index ["saving_goal_id"], name: "index_deposits_on_saving_goal_id"
     t.check_constraint "`request_amount` >= 1", name: "deposits_request_amount_positive"
     t.check_constraint "`status` between 0 and 3", name: "deposits_status_valid"
+  end
+
+  create_table "invitations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "saving_goal_id", null: false
+    t.bigint "invited_by_id", null: false
+    t.string "email", null: false
+    t.string "token_digest", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "accepted_at"
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invited_by_id"], name: "index_invitations_on_invited_by_id"
+    t.index ["saving_goal_id"], name: "index_invitations_on_saving_goal_id"
   end
 
   create_table "memberships", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -76,6 +90,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_042619) do
   add_foreign_key "deposits", "saving_goals"
   add_foreign_key "deposits", "users", column: "member_id"
   add_foreign_key "deposits", "users", column: "reviewed_by_id"
+  add_foreign_key "invitations", "saving_goals"
+  add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "memberships", "saving_goals"
   add_foreign_key "memberships", "users"
   add_foreign_key "saving_goals", "users", column: "created_by_id"

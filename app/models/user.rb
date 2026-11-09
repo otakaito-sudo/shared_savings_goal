@@ -3,6 +3,9 @@ class User < ApplicationRecord
   has_many :saving_goals, through: :memberships
   has_many :created_goals, class_name: "SavingGoal",
            foreign_key: :created_by_id, dependent: :restrict_with_error
+  has_many :sent_invitations, class_name: "Invitation",
+                              foreign_key: :invited_at_id,
+                              dependent: :restrict_with_error
 
   has_secure_password
 

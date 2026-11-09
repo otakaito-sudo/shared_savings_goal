@@ -4,6 +4,7 @@ class SavingGoal < ApplicationRecord
   has_many :memberships, dependent: :destroy
   has_many :users, through: :memberships
   has_many :deposits, dependent: :destroy
+  has_many :invitations, dependent: :destroy
 
   enum :status, { recruiting: 0, achieved: 1, canceled: 2 }
 
