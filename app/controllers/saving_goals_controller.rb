@@ -13,6 +13,7 @@ class SavingGoalsController < ApplicationController
     end
     @deposits=@goal.deposits.includes(:member, :reviewer).recent
     @deposit=Deposit.new
+    @activities=@goal.activities.includes(:actor, :target_user).recent.limit(20)
   end
 
   def new

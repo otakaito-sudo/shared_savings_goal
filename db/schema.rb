@@ -10,7 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_05_074122) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_10_014750) do
+  create_table "activities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "saving_goal_id", null: false
+    t.bigint "actor_id", null: false
+    t.bigint "target_user_id"
+    t.bigint "deposit_id"
+    t.integer "kind", null: false
+    t.integer "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_id"], name: "index_activities_on_actor_id"
+    t.index ["deposit_id"], name: "index_activities_on_deposit_id"
+    t.index ["saving_goal_id", "created_at"], name: "index_activities_on_saving_goal_id_and_created_at"
+    t.index ["saving_goal_id"], name: "index_activities_on_saving_goal_id"
+    t.index ["target_user_id"], name: "index_activities_on_target_user_id"
+  end
+
   create_table "deposits", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "request_amount", null: false
     t.bigint "member_id", null: false
@@ -86,6 +102,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_074122) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "activities", "deposits"
+  add_foreign_key "activities", "saving_goals"
+  add_foreign_key "activities", "users", column: "actor_id"
+  add_foreign_key "activities", "users", column: "target_user_id"
   add_foreign_key "deposits", "memberships", column: ["saving_goal_id", "member_id"], primary_key: ["saving_goal_id", "user_id"], name: "fk_deposits_membership"
   add_foreign_key "deposits", "saving_goals"
   add_foreign_key "deposits", "users", column: "member_id"

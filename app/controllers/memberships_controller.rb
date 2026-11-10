@@ -6,11 +6,13 @@ class MembershipsController < ApplicationController
   def destroy
     membership=@goal.memberships.find(params[:id])
 
-    if membership.destroy
-      redirect_to @goal, notice: "#{membership.user.name} さんを外しました"
-    else
-      redirect_to @goal, alert: membership.errors.full_messages.to_sentence
+    ActiveRecord::Base.transaction do
+      membership.destroy!
+      @goal.activities.create!(actor: current_user, kind: :member_removed, target_user: membership.user)
     end
+      redirect_to @goal, notice: "#{membership.user.name} さんを外しました"
+  rescue ActiveRecord::RecordNotDestroyed
+      redirect_to @goal, alert: membership.errors.full_messages.to_sentence
   end
 
   private

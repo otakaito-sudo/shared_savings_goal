@@ -1,6 +1,7 @@
 class SavingGoal < ApplicationRecord
   belongs_to :creator, class_name: "User", foreign_key: :created_by_id
 
+  has_many :activities, dependent: :destroy
   has_many :memberships, dependent: :destroy
   has_many :users, through: :memberships
   has_many :deposits, dependent: :destroy

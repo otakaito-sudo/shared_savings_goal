@@ -27,5 +27,14 @@ module Deposits
     def review_attributes(status)
       { status: status, reviewed_by_id: @reviewer.id, reviewed_at: Time.current }
     end
+
+    def record_activity!(kind, actor: @reviewer)
+      @deposit.saving_goal.activities.create!(
+        actor: actor,
+        kind: kind,
+        deposit: @deposit,
+        amount: @deposit.request_amount
+      )
+    end
   end
 end

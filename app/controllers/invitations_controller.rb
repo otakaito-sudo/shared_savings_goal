@@ -26,6 +26,7 @@ class InvitationsController < ApplicationController
       else
         @goal.memberships.create!(user: current_user, role: :member)
         @invitation.update!(accepted_at: Time.current)
+        @goal.activities.create!(actor: current_user, kind: :member_joined)
         result= :accepted
       end
     end

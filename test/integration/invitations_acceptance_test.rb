@@ -37,6 +37,7 @@ class InvitationsAcceptanceTest < ActionDispatch::IntegrationTest
     assert_redirected_to saving_goal_path(@goal)
     assert @goal.memberships.exists?(user: @invitee, role: :member)
     assert @invitation.reload.accepted_at.present?
+    assert @goal.activities.member_joined.exists?(actor: @invitee)
 
     # 使用済みリンクは再利用できない
     assert_no_difference "Membership.count" do

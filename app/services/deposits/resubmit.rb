@@ -22,6 +22,7 @@ module Deposits
           reviewed_by_id: nil,
           reviewed_at:    nil
         )
+        record_activity!(:deposit_resubmitted, actor: @requester)
         @deposit
       end
     end

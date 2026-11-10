@@ -5,7 +5,14 @@ class DepositsController < ApplicationController
     goal=current_user.saving_goals.find(params[:saving_goal_id])
     deposit=goal.deposits.new(deposit_params.merge(member: current_user))
 
-    if deposit.save
+    if deposit.valid?
+      ActiveRecord::Base.transaction do
+        deposit.save!
+        goal.activities.create!(
+          actor: current_user, kind: :deposit_requested,
+          deposit: deposit, amount: deposit.request_amount
+        )
+      end
       redirect_to goal, notice: "入金を申請しました"
     else
       redirect_to goal, alert: deposit.errors.full_messages.to_sentence

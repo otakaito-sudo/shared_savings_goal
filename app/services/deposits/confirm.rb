@@ -16,6 +16,12 @@ module Deposits
           reviewed_by_id: @reviewer.id,
           reviewed_at:    Time.current
         )
+        record_activity!(:deposit_confirmed)
+
+        if new_total==goal.target_amount
+          goal.achieved!
+          goal.activities.create!(actor: @reviewer, kind: :goal_achieved)
+        end
 
         goal.achieved! if new_total == goal.target_amount
 

@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :sent_invitations, class_name: "Invitation",
                               foreign_key: :invited_at_id,
                               dependent: :restrict_with_error
+  has_many :activities, foreign_key: :actor_id, dependent: :restrict_with_error
 
   has_secure_password
 

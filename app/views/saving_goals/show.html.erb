@@ -78,3 +78,16 @@
         </tr>
     <% end %>
 </table>
+<h2>活動履歴</h2>
+<% if @activities.any? %>
+  <ul class="activities">
+    <% @activities.each do |a| %>
+      <li>
+        <%= l a.created_at, format: :short rescue a.created_at.strftime("%m/%d %H:%M") %>
+        <%= activity_message(a) %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>まだ活動はありません</p>
+<% end %>

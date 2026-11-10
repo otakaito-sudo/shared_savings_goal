@@ -14,6 +14,7 @@ class Deposits::ConfirmConcurrencyTest < ActiveSupport::TestCase
   end
 
   teardown do
+    Activity.delete_all
     Deposit.delete_all
     Membership.delete_all
     SavingGoal.delete_all

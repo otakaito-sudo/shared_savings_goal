@@ -14,6 +14,7 @@ module Deposits
         authorize!
         ensure_pending!
         @deposit.update!(review_attributes(:remanded).merge(review_comment: @comment))
+        record_activity!(:deposit_remanded)
         @deposit
       end
     end
