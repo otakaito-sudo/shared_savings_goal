@@ -78,6 +78,8 @@
         </tr>
     <% end %>
 </table>
+<%== @deposit_pagy.series_nav %>
+
 <h2>活動履歴</h2>
 <% if @activities.any? %>
   <ul class="activities">
@@ -91,3 +93,4 @@
 <% else %>
   <p>まだ活動はありません</p>
 <% end %>
+<%= link_to "全ての活動をみる", saving_goal_activities_path(@goal) %>

@@ -1,0 +1,11 @@
+<h1><%= @goal.name %> の活動履歴</h1>
+
+<ul class="activities">
+  <% @activities.each do |a| %>
+    <li><%= a.created_at.strftime("%m/%d %H:%M") %> <%= activity_message(a) %></li>
+  <% end %>
+</ul>
+
+<%== @pagy.series_nav %>
+
+<%= link_to "目標に戻る", saving_goal_path(@goal) %>

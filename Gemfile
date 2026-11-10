@@ -4,6 +4,8 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.4"
 
 gem "rails-i18n"
+
+gem "pagy", "~> 43.8"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use mysql as the database for Active Record

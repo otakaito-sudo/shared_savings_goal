@@ -2,7 +2,8 @@ class SavingGoalsController < ApplicationController
   before_action :require_login
 
   def index
-    @goals=current_user.saving_goals.includes(:creator).order(deadline: :asc)
+    @pagy, @goals = pagy(:offset,
+      current_user.saving_goals.includes(:creator).order(deadline: :asc, id: :asc))
   end
 
   def show
@@ -11,9 +12,11 @@ class SavingGoalsController < ApplicationController
     if @membership&.manager?
       @pending_invitations=@goal.invitations.pending.order(created_at: :desc)
     end
-    @deposits=@goal.deposits.includes(:member, :reviewer).recent
+    @deposit_pagy, @deposits=pagy(:offset, 
+      @goal.deposits.includes(:member, :reviewer).recent,
+      limit: 10, page_key: "deposits_page")
     @deposit=Deposit.new
-    @activities=@goal.activities.includes(:actor, :target_user).recent.limit(20)
+    @activities=@goal.activities.includes(:actor, :target_user).recent.limit(5)
   end
 
   def new
