@@ -36,7 +36,22 @@ module SavingGoals
       InvitationMailer.invite(invitation).deliver_now
       redirect_to @goal, notice: "#{invitation.email} に招待メールを送りました"
     end
+    def destroy
+      # 自分が管理する目標の招待だけをさがす（他の目標の招待IDは見つからない）
+      invitation=@goal.invitations.find(params[:id])
 
+      invitation.with_lock do
+        if invitation.active?
+          invitation.update!(revoked_at: Time.current)
+        end
+      end
+
+      if invitation.revoked_at.present? && invitation.accepted_at.nil?
+        redirect_to @goal, notice: "#{invitation.email}への招待を取り消しました"
+      else
+        redirect_to @goal, alert: "この招待はすでに承諾済み、または無効です"
+      end
+    end
     private
 
     def set_goal

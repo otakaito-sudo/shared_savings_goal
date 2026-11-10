@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     resources :memberships, only: [ :create, :destroy ]
     resources :invitations, only: [ :create ], module: :saving_goals
     resources :deposits, only: [ :create ]
+    resources :invitations, only: [ :create, :destroy ], module: :saving_goals
   end
 
   resources :deposits, only: [] do

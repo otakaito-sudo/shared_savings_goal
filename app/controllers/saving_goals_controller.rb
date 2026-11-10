@@ -8,6 +8,9 @@ class SavingGoalsController < ApplicationController
   def show
     @goal=current_user.saving_goals.find(params[:id])
     @membership=@goal.memberships.find_by(user: current_user)
+    if @membership&.manager?
+      @pending_invitations=@goal.invitations.pending.order(created_at: :desc)
+    end
     @deposits=@goal.deposits.includes(:member, :reviewer).recent
     @deposit=Deposit.new
   end

@@ -26,6 +26,19 @@
   <% end %>
 <% end %>
 
+<% if @pending_invitations.present? %>
+    <h3>承諾待ちの招待</h3>
+    <ul>
+        <% @pending_invitations.each do |inv| %>
+            <li>
+                <%= inv.email %> (期限：<%= inv.expires_at.to_date %>)
+                <%= button_to "取り消す", saving_goal_invitation_path(@goal, inv),
+                    method: :delete, form: {data: {turbo_confirm: "招待を取り消しますか？"}} %>
+            </li>
+        <% end %>
+    </ul>
+<% end %>
+
 <% if @goal.accepting_deposits? %>
     <h2>入金を申請</h2>
     <%= form_with model: [@goal, @deposit] do |f| %>

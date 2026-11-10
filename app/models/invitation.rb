@@ -13,6 +13,10 @@ class Invitation < ApplicationRecord
 
   before_validation :prepare_token, on: :create
 
+  scope :pending, -> {
+    where(accepted_at: nil, revoked_at: nil).where("expires_at > ?", Time.current)
+  }
+
   def authenticated?(given_token)
     return false if token_digest.blank? || given_token.blank?
 
