@@ -30,6 +30,9 @@
         <span><%= current_user.name %></span>
         <%= link_to "プロフィール編集", edit_user_path(current_user) %>
         <%= button_to "ログアウト", logout_path, method: :delete %>
+      <% else %>
+        <%= link_to "ログイン", login_path %>
+        <%= link_to "ユーザー登録", new_user_path %>
       <% end %>
     </nav>
     
