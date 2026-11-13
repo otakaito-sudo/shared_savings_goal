@@ -10,7 +10,7 @@
 
 <%= form_with url: accept_invitation_path(@invitation), method: :post do |f| %>
     <%= hidden_field_tag :token, params[:token] %>
-    <%= f.submit "招待を承諾する" %>
+    <%= f.submit "招待を承諾する", class: "btn btn--primary" %>
 <% end %>
 
 <%= link_to "戻る", root_path %>

@@ -1,9 +1,9 @@
 class SavingGoalsController < ApplicationController
-  before_action :require_login
+  before_action :require_login        # ログイン必須
 
   def index
     @pagy, @goals = pagy(:offset,
-      current_user.saving_goals.includes(:creator).order(deadline: :asc, id: :asc))
+      current_user.saving_goals.includes(:creator).order(deadline: :asc, id: :asc))   # includeは作成者を先読みして、n+1問題を防ぐ
   end
 
   def show
@@ -12,11 +12,15 @@ class SavingGoalsController < ApplicationController
     if @membership&.manager?
       @pending_invitations=@goal.invitations.pending.order(created_at: :desc)
     end
-    @deposit_pagy, @deposits=pagy(:offset, 
+    @deposit_pagy, @deposits=pagy(:offset,
       @goal.deposits.includes(:member, :reviewer).recent,
       limit: 10, page_key: "deposits_page")
     @deposit=Deposit.new
     @activities=@goal.activities.includes(:actor, :target_user).recent.limit(5)
+
+    @my_remanded_deposits = @goal.deposits.where(member: current_user, status: :remanded).recent
+    @pending_deposit_count = @membership&.manager? ? @goal.deposits.pending.count : 0
+    @member_totals = @goal.deposits.confirmed.group(:member_id).sum(:request_amount)
   end
 
   def new

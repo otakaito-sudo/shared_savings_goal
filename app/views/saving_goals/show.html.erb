@@ -1,19 +1,70 @@
-<h1><%= @goal.name %></h1>
-<p><%= @goal.purpose %></p>
-<p>
-    <%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %> / <%= number_to_currency(@goal.target_amount, unit: "円", precision: 0) %>
-        (残り <%= number_to_currency(@goal.remaining_amount, unit: "円", precision: 0) %>)
-</p>
-<p>期限: <%= @goal.deadline %> / 状態: <%= t("goals.status.#{@goal.display_status}", locale: :ja) %></p>
+<% badge = { "recruiting" => "open", "achieved" => "achieved",
+             "canceled" => "closed", "expired" => "closed" }[@goal.display_status.to_s] %>
+<div class="goal-hero">
+  <h1>
+    <%= @goal.name %>
+    <span class="badge badge--<%= badge %>"><%= t("goals.status.#{@goal.display_status}", locale: :ja) %></span>
+  </h1>
+  <p><%= @goal.purpose %></p>
+  <div class="progress">
+    <div class="progress__bar">
+      <div class="progress__fill<%= " progress__fill--done" if @goal.achieved? %>"
+           style="width: <%= @goal.progress_percent %>%"></div>
+    </div>
+    <p class="progress__label"><%= @goal.progress_percent %>%</p>
+  </div>
+  <p class="goal-hero__amount">
+    <% if @goal.achieved? %>
+      <p>🎉 目標を達成しました！</p>
+    <% end %>
+    <%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %>
+  </p>
+  <p class="goal-hero__remaining">
+    目標 <%= number_to_currency(@goal.target_amount, unit: "円", precision: 0) %>
+    （残り <%= number_to_currency(@goal.remaining_amount, unit: "円", precision: 0) %>）
+    ・ 期限 <%= @goal.deadline %>
+    <% if @goal.days_remaining.negative? %>
+      <span class="deadline-soon">（期限切れ）</span>
+    <% elsif @goal.days_remaining <= 7 %>
+      <span class="deadline-soon">（あと <%= @goal.days_remaining %> 日）</span>
+    <% else %>
+      （あと <%= @goal.days_remaining %> 日）
+    <% end %>
+  </p>
+</div>
+
+<% if @my_remanded_deposits.any? || @pending_deposit_count.positive? %>
+  <div class="todo-box">
+    <h2>あなたのやること</h2>
+    <% @my_remanded_deposits.each do |d| %>
+      <p>
+        ⚠ <%= number_to_currency(d.request_amount, unit: "円", precision: 0) %> の入金が差し戻されています
+        <% if d.review_comment.present? %>（理由：<%= d.review_comment %>）<% end %>
+        。下の入金申請一覧から再申請してください。
+      </p>
+    <% end %>
+    <% if @pending_deposit_count.positive? %>
+      <p>確認待ちの入金が <%= @pending_deposit_count %> 件あります。下の入金申請一覧から確認してください。</p>
+    <% end %>
+  </div>
+<% end %>
 
 <h2>参加メンバー</h2>
 <ul>
     <% @goal.memberships.includes(:user).each do |m| %>
         <li>
-            <%= m.user.name %> (<%= m.role %>) 
+            <%= m.user.name %>
+            <% if m.manager? %>
+              <span class="badge badge--open">管理者</span>
+            <% else %>
+              <span class="badge badge--pending">メンバー</span>
+            <% end %>
+              <span class="progress__label">
+                ・ 入金 <%= number_to_currency(@member_totals[m.user_id] || 0, unit: "円", precision: 0) %>
+              </span>
             <% if @membership&.manager? && m.user != current_user %>
                 <%= button_to "外す", saving_goal_membership_path(@goal, m),
-                    method: :delete, form: {data: {turbo_confirm: "外しますか？"}} %>
+                    method: :delete, form: {data: {turbo_confirm: "外しますか？"}}, class: "btn btn--muted" %>
             <% end %>
         </li>
     <% end %>
@@ -22,7 +73,7 @@
 <% if @membership&.manager? && @goal.open? %>
   <%= form_with url: saving_goal_invitations_path(@goal) do |f| %>
     <%= f.email_field :email, placeholder: "招待する人のメールアドレス", required: true %>
-    <%= f.submit "招待メールを送る" %>
+    <%= f.submit "招待メールを送る", class: "btn btn--muted" %>
   <% end %>
 <% end %>
 
@@ -33,7 +84,7 @@
             <li>
                 <%= inv.email %> (期限：<%= inv.expires_at.to_date %>)
                 <%= button_to "取り消す", saving_goal_invitation_path(@goal, inv),
-                    method: :delete, form: {data: {turbo_confirm: "招待を取り消しますか？"}} %>
+                    method: :delete, form: {data: {turbo_confirm: "招待を取り消しますか？"}}, class: "btn btn--muted" %>
             </li>
         <% end %>
     </ul>
@@ -42,42 +93,51 @@
 <% if @goal.accepting_deposits? %>
     <h2>入金を申請</h2>
     <%= form_with model: [@goal, @deposit] do |f| %>
-        <%= f.number_field :request_amount %>
-        <%= f.submit "申請する" %>
+        <%= f.label :request_amount, "金額（円）" %>
+        <%= f.number_field :request_amount, placeholder: "例：5000", min: 1 %>
+        <%= f.submit "申請する", class: "btn btn--primary" %>
     <% end %>
 <% end %>
 
 <h2>入金申請一覧</h2>
-<table>
-    <tr><th>申請者</th><th>金額</th><th>状態</th><th>確認者</th><th>操作</th></tr>
-    <% @deposits.each do |d| %>
-        <tr>
-            <td><%= d.member.name %></td>
-            <td><%= number_to_currency(d.request_amount, unit: "円", precision: 0) %></td>
-            <td>
-                <%= t("deposits.status.#{d.status}", locale: :ja) %>
-                <% if d.remanded? %><br><small><%= d.review_comment %></small><% end %>
-            </td>
-            <td><%= d.reviewer&.name %></td>
-            <td>
-                <% if d.pending? && @membership&.manager? %>
-                    <%= button_to "確認", confirm_deposit_path(d), method: :patch %>
-                    <%= button_to "却下", reject_deposit_path(d), method: :patch %>
-                    <%= form_with url: remand_deposit_path(d), method: :patch do |f| %>
-                        <%= f.text_field :review_comment, placeholder: "差し戻し理由" %>
-                        <%= f.submit "差し戻し" %>
-                    <% end %>
-                <% end %>
-                <% if d.remanded? && d.member == current_user %>
-                    <%= form_with url: resubmit_deposit_path(d), method: :patch do |f| %>
-                        <%= f.number_field :request_amount, value: d.request_amount %>
-                        <%= f.submit "再申請" %>
-                    <% end %>
-                <% end %>
-            </td>
-        </tr>
+<% if @deposits.empty? %>
+  <p>まだ入金申請はありません</p>
+<% end %>
+<% @deposits.each do |d| %>
+  <% dep_badge = { "pending" => "pending", "confirmed" => "approved",
+                   "rejected" => "rejected", "remanded" => "returned" }[d.status] %>
+  <div class="deposit-card">
+    <p>
+      <span class="deposit-card__amount"><%= number_to_currency(d.request_amount, unit: "円", precision: 0) %></span>
+      <span class="badge badge--<%= dep_badge %>"><%= t("deposits.status.#{d.status}", locale: :ja) %></span>
+    </p>
+    <p class="progress__label">
+      <%= d.member.name %> さん
+      <% if d.reviewer %> ・ 確認者 <%= d.reviewer.name %> さん<% end %>
+      ・ <%= d.created_at.strftime("%m/%d") %>
+    </p>
+    <% if d.remanded? && d.review_comment.present? %>
+      <p class="deposit-card__comment">差し戻し理由：<%= d.review_comment %></p>
     <% end %>
-</table>
+
+    <% if d.pending? && @membership&.manager? %>
+      <div class="deposit-actions">
+        <%= button_to "確認", confirm_deposit_path(d), method: :patch, class: "btn btn--primary" %>
+        <%= button_to "却下", reject_deposit_path(d), method: :patch, class: "btn btn--muted" %>
+      </div>
+      <%= form_with url: remand_deposit_path(d), method: :patch do |f| %>
+        <%= f.text_field :review_comment, placeholder: "差し戻し理由" %>
+        <%= f.submit "差し戻し", class: "btn btn--muted" %>
+      <% end %>
+    <% end %>
+    <% if d.remanded? && d.member == current_user %>
+      <%= form_with url: resubmit_deposit_path(d), method: :patch do |f| %>
+        <%= f.number_field :request_amount, value: d.request_amount %>
+        <%= f.submit "再申請", class: "btn btn--primary" %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
 <%== @deposit_pagy.series_nav %>
 
 <h2>活動履歴</h2>

@@ -2,7 +2,7 @@
 
 <%= form_with model: @user, url: password_reset_path(params[:id]), method: :patch do |f| %>
     <% if @user.errors.any? %>
-        <ul>
+        <ul class="flash-alert">
             <% @user.errors.full_messages.each do |message| %>
                 <li><%= message %></li>
             <% end %>
@@ -21,5 +21,5 @@
         <%= f.password_field :password_confirmation %>
     </div>
 
-    <%= f.submit "パスワードを変更する" %>
+    <%= f.submit "パスワードを変更する", class: "btn btn--primary" %>
 <% end %>

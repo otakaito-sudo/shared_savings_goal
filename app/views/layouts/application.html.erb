@@ -24,7 +24,7 @@
   </head>
 
   <body>
-    <nav>
+    <nav class="app-header">
       <%= link_to "貯金目標", root_path %>
       <% if logged_in? %>
         <span><%= current_user.name %></span>
@@ -37,6 +37,8 @@
       <p class="flash-<%= type %>"><%= message %></p>
     <% end %>
     
-    <%= yield %>
+    <main class="container">
+      <%= yield %>
+    </main>
   </body>
 </html>

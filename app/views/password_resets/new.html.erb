@@ -1,7 +1,7 @@
 <h1>パスワード再設定</h1>
 <%= form_with url: password_resets_path do |f| %>
     <%= f.email_field :email, placeholder: "メールアドレス" %>
-    <%= f.submit "再設定メールを送る" %>
+    <%= f.submit "再設定メールを送る", class: "btn btn--primary" %>
 <% end %>
 
 <%= link_to "ログイン画面に戻る", login_path %>

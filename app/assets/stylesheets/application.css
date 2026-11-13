@@ -1,10 +1,199 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+/* ============================================================
+   共同貯金アプリ デザイン実装ステップ1〜3（貼るだけCSS）
+   元のたたき台：files/design-draft.md の6章「実装の進め方」ステップ1〜3
+   ------------------------------------------------------------
+   使い方：
+   1. このファイルの中身を app/assets/stylesheets/application.css
+      の末尾にそのまま貼る（フレームワーク新規導入なし）
+   2. 一覧・詳細のERBに、下のコメントで示した class だけ足す
+      （class 名はこのCSSで新しく決めたもの。変数名は
+       実際のテンプレートのものに読み替えてください）
+   3. ステップ1→2→3の順に1つずつ確認しながら進める
+   ============================================================ */
+
+/* ---------- ステップ1：土台 ---------- */
+/* 画面全体：スマホ幅を基準に、PCでは中央に寄せる */
+body {
+  background: #F7F9F8;          /* 背景：白に近いグレー */
+  color: #1F2937;               /* 文字：濃いグレー（真っ黒にしない） */
+  font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", sans-serif;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.container {
+  max-width: 640px;             /* スマホ幅基準 */
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ヘッダー：アプリ名と自分の名前だけのシンプルな帯 */
+.app-header {
+  background: #0E9F6E;          /* メイン：信頼感のあるグリーン */
+  color: #fff;
+  padding: 12px 16px;
+  font-weight: 700;
+}
+
+/* フラッシュメッセージ：成功は緑、失敗・注意はアンバー */
+/* 実際のレイアウトのクラス名（flash-notice / flash-alert）に合わせた */
+.flash-notice, .flash-alert { padding: 10px 14px; border-radius: 8px; margin: 12px 0; }
+.flash-notice { background: #D1FAE5; color: #065F46; }
+.flash-alert  { background: #FEF3C7; color: #92400E; }
+
+/* ---------- ステップ2：一覧のカード化＋進捗バー ---------- */
+/* 目標一覧の1件分。箇条書きをやめてカードにする */
+.goal-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;          /* 角丸は全画面で12pxに統一 */
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.goal-card__title { font-size: 1.1rem; font-weight: 700; margin: 0 0 4px; }
+.goal-card__amount { font-size: 1.25rem; font-weight: 700; }
+
+/* 進捗バー：太め（12px以上）＋％を必ず併記する */
+.progress { margin: 8px 0 4px; }
+.progress__bar {
+  height: 14px;
+  background: #E5E7EB;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress__fill {
+  height: 100%;
+  background: #0E9F6E;
+  border-radius: 999px;
+  /* 幅はERBで style="width: 68%" のように入れる */
+}
+.progress__fill--done { background: #F5A623; }  /* 達成時はアンバーに */
+.progress__label { font-size: 0.9rem; color: #6B7280; }
+
+/* ---------- ステップ3：詳細の進捗ヒーロー＋状態バッジ ---------- */
+/* 詳細画面の一番上：進捗を大きく見せるブロック */
+.goal-hero {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 20px 16px;
+  margin-bottom: 16px;
+}
+.goal-hero .progress__bar { height: 16px; }     /* ヒーローではさらに太く */
+.goal-hero__amount { font-size: 1.6rem; font-weight: 700; }
+.goal-hero__remaining { color: #6B7280; }
+
+/* 状態バッジ：アプリ全体で色を統一する（design-draft.md 5章） */
+/* 使い方：<span class="badge badge--pending">確認待ち</span> */
+/* 文字は config/locales/ja.yml の訳をそのまま使うこと */
+.badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.badge--pending  { background: #FEF3C7; color: #92400E; }  /* 確認待ち：黄 */
+.badge--approved { background: #D1FAE5; color: #065F46; }  /* 確認済み：緑 */
+.badge--returned { background: #FFEDD5; color: #9A3412; }  /* 差し戻し：オレンジ */
+.badge--rejected { background: #F3F4F6; color: #6B7280; }  /* 却下：グレー */
+.badge--open     { background: #DBEAFE; color: #1E40AF; }  /* 募集中：青 */
+.badge--achieved { background: #D1FAE5; color: #065F46; }  /* 達成：緑 */
+.badge--closed   { background: #F3F4F6; color: #6B7280; }  /* 期限切れ・中止：グレー */
+
+/* 「あなたのやること」：差し戻し・確認待ちを目立たせる箱 */
+.todo-box {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+/* 入金申請カード：テーブルをやめて1件ずつカードに */
+.deposit-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+.deposit-card__amount { font-weight: 700; }
+.deposit-card__comment { color: #9A3412; font-size: 0.9rem; } /* 差し戻し理由を目立たせる */
+
+/* ---------- ステップ1の続き：フォームとボタン（ステップ4の下地） ---------- */
+/* 主ボタンは1画面に1つだけ目立たせる。危険操作は地味に */
+.btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn--primary { background: #0E9F6E; color: #fff; }
+.btn--muted   { background: #F3F4F6; color: #374151; }  /* 却下・外す など */
+input[type="number"], input[type="text"], input[type="email"],
+input[type="password"], textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.goal-card__title a { color: inherit; text-decoration: none; }
+
+a.btn { margin-bottom: 16px; }
+
+/* ヘッダー内は白文字に統一し、ログアウトボタンも帯に馴染ませる */
+.app-header a { color: #fff; text-decoration: none; margin-right: 12px;}
+.app-header span { margin-right: 12px;}
+.app-header form { display: inline-block; margin: 0;}
+.app-header button {
+background: transparent; color: #fff; border: 1px solid #fff;
+border-radius: 8px; padding: 4px 10px; cursor: pointer;
+}
+input[type="date"] {
+width: 100%; box-sizing: border-box; padding: 10px 12px;
+border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;
+}
+.deposit-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;}
+.deposit-actions form { margin: 0;}
+.deposit-actions.btn { margin-bottom: 0;}
+
+.deadline-soon { color: #B91C1C; font-weight: 700; }
+
+.auth-card {
+  background: #fff; border: 1px solid #E5E7EB; border-radius: 12px;
+  padding: 20px 16px; max-width: 420px; margin: 24px auto;
+}
+.auth-card .btn { width: 100%; box-sizing: border-box; text-align: center; }
+
+/* ページネーションをボタン風に（今は <1> と素で出ている） */
+.pagy { display: flex; gap: 6px; justify-content: center; margin: 16px 0; flex-wrap: wrap; }
+.pagy a {
+  padding: 6px 12px; border: 1px solid #D1D5DB; border-radius: 8px;
+  background: #fff; color: inherit; text-decoration: none;
+}
+.pagy a[aria-current="page"] { background: #0E9F6E; color: #fff; border-color: #0E9F6E; }
+
+/* ホバーで少しだけ反応を返す */
+.btn:hover { opacity: 0.9; }
+.goal-card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+
+/* ---------- ERBに足す class の目安（2026-11-13 実際のテンプレートで確認済み） ----------
+   一覧 (saving_goals/index)：変数は @goals、状態は goal.display_status で、
+     完成形は design-step1-2-apply.md の「3. index.html.erb 完成形」をそのまま貼ればよい。
+     進捗％は SavingGoal#progress_percent（同ファイルの「1.」で追加するメソッド）を使う。
+   詳細 (saving_goals/show)：一番上に <div class="goal-hero"> で進捗を囲み、
+     差し戻し・確認待ちは <div class="todo-box"> に、入金申請1件ずつは
+     <div class="deposit-card"> にする。状態の文字には badge--pending 等を付ける。
+   進捗％の計算式がまだ無い場合は、(現在額 ÷ 目標額 × 100) を
+   モデルかヘルパーに足すところから始める（発表で語れるポイントになる）。
+   ----------------------------------------------------------------------- */

@@ -2,7 +2,7 @@
 
 <%= form_with model: @user do |f| %>
     <% if @user.errors.any? %>
-        <ul>
+        <ul class="flash-alert">
             <% @user.errors.full_messages.each do |message| %>
                 <li><%= message %></li>
             <% end %>
@@ -14,5 +14,5 @@
         <%= f.text_field :name %>
     </div>
 
-    <%= f.submit "更新する" %>
+    <%= f.submit "更新する", class: "btn btn--primary" %>
 <% end %>

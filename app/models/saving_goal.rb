@@ -23,6 +23,18 @@ class SavingGoal < ApplicationRecord
     target_amount - current_amount
   end
 
+  # 期限までの残り日数（過ぎていれば負の値）
+  def days_remaining
+    (deadline - Date.current).to_i
+  end
+
+  # 進捗率（％）。確認済み入金の合計 ÷ 目標額。100を超えない
+  def progress_percent
+    return 0 if target_amount.zero?
+
+    [ current_amount * 100 / target_amount, 100 ].min
+  end
+
   def deadline_passed?
     deadline.present? && deadline < Date.current
   end
