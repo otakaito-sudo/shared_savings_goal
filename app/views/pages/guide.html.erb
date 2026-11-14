@@ -1,0 +1,37 @@
+<% content_for :container_class, "container--wide" %>
+<h1>使い方</h1>
+<p>共同貯金は、グループで1つの目標に向けてお金を貯めるアプリです。流れは3ステップだけです。</p>
+
+<div class="steps">
+  <div class="step-card">
+    <span class="step-num">1</span>
+    <h3>目標を作る</h3>
+    <p>「新規作成」から、目標名・金額・期限を決めます。作った人が最初の管理者になります。</p>
+  </div>
+  <div class="step-card">
+    <span class="step-num">2</span>
+    <h3>メンバーを招待する</h3>
+    <p>目標の画面からメールアドレスで招待します。相手がメール内のリンクから参加すると、メンバーに追加されます。</p>
+  </div>
+  <div class="step-card">
+    <span class="step-num">3</span>
+    <h3>入金を申請して、確認してもらう</h3>
+    <p>入金したら金額を「申請」します。管理者が「確認」すると、貯金額と進捗バーに反映されます。申請しただけでは増えないのがポイントです。</p>
+  </div>
+</div>
+
+<h2>役割について</h2>
+<ul>
+  <li><span class="badge badge--open">管理者</span> 入金の確認・却下・差し戻し、メンバーの招待・除外ができます</li>
+  <li><span class="badge badge--pending">メンバー</span> 入金の申請ができます</li>
+</ul>
+
+<h2>入金の状態</h2>
+<ul>
+  <li><span class="badge badge--pending">確認待ち</span> 申請した直後。まだ貯金額には入りません</li>
+  <li><span class="badge badge--approved">確認済み</span> 管理者が確認し、貯金額に反映されました</li>
+  <li><span class="badge badge--returned">差し戻し</span> 理由つきで戻されました。金額を直して再申請できます</li>
+  <li><span class="badge badge--rejected">却下</span> この申請は終了です。必要なら新しく申請し直してください</li>
+</ul>
+
+<p><%= link_to "さっそく目標を作る", new_saving_goal_path, class: "btn btn--primary" %></p>

@@ -27,10 +27,13 @@
     <nav class="app-header">
       <%= link_to "貯金目標", root_path %>
       <% if logged_in? %>
-        <span><%= current_user.name %></span>
+        <span class="nav-user"><%= current_user.name %></span>
         <%= link_to "プロフィール編集", edit_user_path(current_user) %>
-        <%= button_to "ログアウト", logout_path, method: :delete %>
+        <div class="nav-right">
+          <%= link_to "使い方", guide_path %>
+          <%= button_to "ログアウト", logout_path, method: :delete %>
       <% else %>
+        <%= link_to "使い方", guide_path %>
         <%= link_to "ログイン", login_path %>
         <%= link_to "ユーザー登録", new_user_path %>
       <% end %>
@@ -40,7 +43,7 @@
       <p class="flash-<%= type %>"><%= message %></p>
     <% end %>
     
-    <main class="container">
+    <main class="container <%= yield(:container_class) %>">
       <%= yield %>
     </main>
   </body>

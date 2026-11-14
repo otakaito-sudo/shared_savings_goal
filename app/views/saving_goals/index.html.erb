@@ -1,33 +1,45 @@
+<% content_for :container_class, "container--wide" %>
 <h1>貯金目標</h1>
 <%= link_to "新規作成", new_saving_goal_path, class: "btn btn--primary" %>
 
 <% if @goals.empty? %>
-  <div class="goal-card"><p>まだ貯金目標がありません。「新規作成」から最初の目標を作りましょう。</p></div>
-<% end %>
-
-<% @goals.each do |goal| %>
-  <% badge = { "recruiting" => "open", "achieved" => "achieved",
-               "canceled" => "closed", "expired" => "closed" }[goal.display_status.to_s] %>
   <div class="goal-card">
-    <p class="goal-card__title">
-      <%= link_to goal.name, goal %>
-      <span class="badge badge--<%= badge %>"><%= t("goals.status.#{goal.display_status}", locale: :ja) %></span>
-    </p>
-    <div class="progress">
-      <div class="progress__bar">
-        <div class="progress__fill<%= " progress__fill--done" if goal.achieved? %>"
-             style="width: <%= goal.progress_percent %>%"></div>
-      </div>
-      <p class="progress__label"><%= goal.progress_percent %>%</p>
-    </div>
-    <p class="goal-card__amount">
-      <%= number_to_currency(goal.current_amount, unit: "円", precision: 0) %> /
-      <%= number_to_currency(goal.target_amount, unit: "円", precision: 0) %>
-    </p>
-    <p class="progress__label">
-      残り <%= number_to_currency(goal.remaining_amount, unit: "円", precision: 0) %> ・ 期限 <%= goal.deadline %>
+    <h2>ようこそ！まずは目標を作りましょう</h2>
+    <ol>
+      <li>目標を作る（金額と期限を決める）</li>
+      <li>メンバーを招待する（メールアドレスで招待）</li>
+      <li>入金を申請して、管理者に確認してもらう</li>
+    </ol>
+    <p>
+      <%= link_to "目標を作る", new_saving_goal_path, class: "btn btn--primary" %>
+      <%= link_to "使い方をくわしく見る", guide_path %>
     </p>
   </div>
 <% end %>
-
+<div class="goals-grid">
+  <% @goals.each do |goal| %>
+    <% badge = { "recruiting" => "open", "achieved" => "achieved",
+                "canceled" => "closed", "expired" => "closed" }[goal.display_status.to_s] %>
+    <div class="goal-card">
+      <p class="goal-card__title">
+        <%= link_to goal.name, goal %>
+        <span class="badge badge--<%= badge %>"><%= t("goals.status.#{goal.display_status}", locale: :ja) %></span>
+      </p>
+      <div class="progress">
+        <div class="progress__bar">
+          <div class="progress__fill<%= " progress__fill--done" if goal.achieved? %>"
+              style="width: <%= goal.progress_percent %>%"></div>
+        </div>
+        <p class="progress__label"><%= goal.progress_percent %>%</p>
+      </div>
+      <p class="goal-card__amount">
+        <%= number_to_currency(goal.current_amount, unit: "円", precision: 0) %> /
+        <%= number_to_currency(goal.target_amount, unit: "円", precision: 0) %>
+      </p>
+      <p class="progress__label">
+        残り <%= number_to_currency(goal.remaining_amount, unit: "円", precision: 0) %> ・ 期限 <%= goal.deadline %>
+      </p>
+    </div>
+  <% end %>
+</div>
 <%== @pagy.series_nav %>

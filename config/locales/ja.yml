@@ -11,3 +11,9 @@ ja:
       achieved: 達成
       canceled: 中止
       expired: 期限切れ
+  activerecord:
+    attributes:
+      saving_goal:
+        name: 目標名
+        target_amount: 目標金額
+        deadline: 期限
