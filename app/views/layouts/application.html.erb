@@ -28,14 +28,17 @@
       <%= link_to "💰 共同貯金", root_path, class: "brand-link" %>
       <% if logged_in? %>
         <span class="nav-user"><%= current_user.name %></span>
-        <%= link_to "プロフィール編集", edit_user_path(current_user) %>
+        <%= link_to "プロフィール編集", edit_user_path(current_user), class: "nav-profile" %>
         <div class="nav-right">
           <%= link_to "使い方", guide_path %>
           <%= button_to "ログアウト", logout_path, method: :delete %>
+        </div>
       <% else %>
-        <%= link_to "使い方", guide_path %>
-        <%= link_to "ログイン", login_path %>
-        <%= link_to "ユーザー登録", new_user_path %>
+        <div class="nav-right">
+          <%= link_to "使い方", guide_path %>
+          <%= link_to "ログイン", login_path %>
+          <%= link_to "ユーザー登録", new_user_path %>
+        </div>
       <% end %>
     </nav>
     

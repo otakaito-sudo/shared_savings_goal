@@ -155,10 +155,22 @@ a.btn { margin-bottom: 16px; }
 .app-header a { color: #fff; text-decoration: none; margin-right: 12px;}
 .app-header span { margin-right: 12px;}
 .app-header form { display: inline-block; margin: 0;}
+
 .app-header button {
-background: transparent; color: #fff; border: 1px solid #fff;
-border-radius: 8px; padding: 4px 10px; cursor: pointer;
+  background: #ffffff;        /* 背景を白に */
+  color: #0E9F6E;             /* 文字をヘッダーと同じ緑に */
+  border: 1px solid #ffffff;  /* 枠線も白に */
+  border-radius: 8px; 
+  padding: 4px 12px; 
+  cursor: pointer;
+  font-weight: 700;           /* 文字を少し太く */
 }
+
+/* カーソルを乗せた時に少し透けさせる */
+.app-header button:hover {
+  opacity: 0.8;
+}
+
 input[type="date"] {
 width: 100%; box-sizing: border-box; padding: 10px 12px;
 border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;
@@ -205,8 +217,10 @@ border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;
 .detail-col .deposit-card { background: #F7F9F8; }  /* 白いパネル上でカードを浮かせる */
 
 @media (min-width: 900px) {
-  .detail-grid { grid-template-columns: 300px 1fr 370px; align-items: start; }
+  .detail-grid { grid-template-columns: 340px 1fr; align-items: start; }
+  .detail-col--wide { grid-column: 1 / -1; }
 }
+
 
 .app-header .nav-user {
   background: rgba(255, 255, 255, 0.18);
@@ -339,6 +353,80 @@ input:focus, textarea:focus {
   box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06), 0 4px 14px rgba(16, 24, 40, 0.05);
 }
 
+.detail-grid > .detail-col--wide { grid-column: 1 / -1; }
+
+/* ステップ11：入金カードを横並び行に */
+.deposit-card {
+  display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 12px;
+}
+.deposit-card__info { flex: 1 1 auto; min-width: 200px; }
+.deposit-card__info p { margin: 0 0 4px; }
+.deposit-card__actions { display: flex; gap: 8px; align-items: flex-start; margin-left: auto; }
+.deposit-card__actions form { margin: 0; }
+
+/* 差し戻し：開いたときだけ理由フォームを出す */
+.remand-box summary { list-style: none; cursor: pointer; display: inline-flex; }
+.remand-box summary::-webkit-details-marker { display: none; }
+.remand-box form { display: flex; gap: 8px; margin-top: 8px; width: min(400px, 100%); }
+.remand-box form input[type="text"] { flex: 1; }
+
+/* 差し戻し済みの再申請フォームは下段の全幅行に */
+.deposit-card__resubmit { flex: 1 1 100%; display: flex; gap: 8px; }
+.deposit-card__resubmit input[type="number"] { flex: 1; }
+
+.app-header nav .btn--header {
+  background: #F3F4F6;
+  color: #374151;
+  border: 1px solid #D1D5DB;
+}
+.app-header nav .btn--header:hover {
+  border-color: #0E9F6E; color: #0B7A55;
+}
+
+.app-header a, .app-header .nav-user, .app-header .btn--header {
+  white-space: nowrap;
+}
+/* ===== ヘッダー最終調整（nav.app-header 前提） ===== */
+.app-header {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 8px 12px; justify-content: flex-start;
+}
+.app-header a { margin-right: 0; }
+.app-header .brand-link { order: 1; }
+.nav-right { order: 2; margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.nav-right form { margin: 0; }
+.app-header button {
+  background: #F3F4F6; color: #374151;
+  border: 1px solid #D1D5DB; border-radius: 10px;
+  padding: 8px 14px; font-weight: 700; cursor: pointer;
+}
+.app-header button:hover { border-color: #0E9F6E; color: #0B7A55; opacity: 1; }
+.app-header .nav-right button {
+  background: #ffffff;
+  color: #B91C1C;
+  border-color: #ffffff;
+}
+.app-header .nav-right button:hover {
+  background: #FECACA;
+  color: #991B1B;
+  border-color: #FCA5A5;
+}
+
+@media (max-width: 640px) {
+  .app-header .nav-user { order: 3; }
+  .nav-profile { order: 4; }
+}
+
+@media (min-width: 900px) {
+  .app-header { flex-wrap: nowrap; }
+  .app-header .nav-user { order: 2; }
+  .app-header .nav-profile { order: 3; }
+  .app-header .nav-right { order: 4; }
+}
+
+@media (min-width: 900px) {
+  .detail-grid { grid-template-columns: 1fr 360px; align-items: start; }
+}
 
 /* ---------- ERBに足す class の目安（2026-11-13 実際のテンプレートで確認済み） ----------
    一覧 (saving_goals/index)：変数は @goals、状態は goal.display_status で、

@@ -104,46 +104,54 @@
     <% end %>
   </section>
 
-  <section class="detail-col">
+  <section class="detail-col detail-col--wide">
     <h2>入金申請一覧</h2>
     <% if @deposits.empty? %>
       <p>まだ入金申請はありません</p>
     <% end %>
-    <% @deposits.each do |d| %>
-      <% dep_badge = { "pending" => "pending", "confirmed" => "approved",
-                      "rejected" => "rejected", "remanded" => "returned" }[d.status] %>
-      <div class="deposit-card">
-        <p>
-          <span class="deposit-card__amount"><%= number_to_currency(d.request_amount, unit: "円", precision: 0) %></span>
-          <span class="badge badge--<%= dep_badge %>"><%= t("deposits.status.#{d.status}", locale: :ja) %></span>
-        </p>
-        <p class="progress__label">
-          <%= d.member.name %> さん
-          <% if d.reviewer %> ・ 確認者 <%= d.reviewer.name %> さん<% end %>
-          ・ <%= d.created_at.strftime("%m/%d") %>
-        </p>
-        <% if d.remanded? && d.review_comment.present? %>
-          <p class="deposit-card__comment">差し戻し理由：<%= d.review_comment %></p>
-        <% end %>
-
-        <% if d.pending? && @membership&.manager? %>
-          <div class="deposit-actions">
-            <%= button_to "確認", confirm_deposit_path(d), method: :patch, class: "btn btn--primary" %>
-            <%= button_to "却下", reject_deposit_path(d), method: :patch, class: "btn btn--muted" %>
+    <div class="deposits-grid">
+      <% @deposits.each do |d| %>
+        <% dep_badge = { "pending" => "pending", "confirmed" => "approved",
+                        "rejected" => "rejected", "remanded" => "returned" }[d.status] %>
+        <div class="deposit-card">
+          <div class="deposit-card__info">
+            <p>
+              <span class="deposit-card__amount"><%= number_to_currency(d.request_amount, unit: "円", precision: 0) %></span>
+              <span class="badge badge--<%= dep_badge %>"><%= t("deposits.status.#{d.status}", locale: :ja) %></span>
+            </p>
+            <p class="progress__label">
+              <%= d.member.name %> さん
+              <% if d.reviewer %> ・ 確認者 <%= d.reviewer.name %> さん<% end %>
+              ・ <%= d.created_at.strftime("%m/%d") %>
+            </p>
+            <% if d.remanded? && d.review_comment.present? %>
+              <p class="deposit-card__comment">差し戻し理由：<%= d.review_comment %></p>
+            <% end %>
           </div>
-          <%= form_with url: remand_deposit_path(d), method: :patch do |f| %>
-            <%= f.text_field :review_comment, placeholder: "差し戻し理由" %>
-            <%= f.submit "差し戻し", class: "btn btn--muted" %>
+
+          <% if d.pending? && @membership&.manager? %>
+            <div class="deposit-card__actions">
+              <%= button_to "確認", confirm_deposit_path(d), method: :patch, class: "btn btn--primary" %>
+              <%= button_to "却下", reject_deposit_path(d), method: :patch, class: "btn btn--muted" %>
+              <details class="remand-box">
+                <summary class="btn btn--muted">差し戻し</summary>
+                <%= form_with url: remand_deposit_path(d), method: :patch do |f| %>
+                  <%= f.text_field :review_comment, placeholder: "差し戻し理由（必須）" %>
+                  <%= f.submit "差し戻す", class: "btn btn--muted" %>
+                <% end %>
+              </details>
+            </div>
           <% end %>
-        <% end %>
-        <% if d.remanded? && d.member == current_user %>
-          <%= form_with url: resubmit_deposit_path(d), method: :patch do |f| %>
-            <%= f.number_field :request_amount, value: d.request_amount %>
-            <%= f.submit "再申請", class: "btn btn--primary" %>
+
+          <% if d.remanded? && d.member == current_user %>
+            <%= form_with url: resubmit_deposit_path(d), method: :patch, class: "deposit-card__resubmit" do |f| %>
+              <%= f.number_field :request_amount, value: d.request_amount %>
+              <%= f.submit "再申請", class: "btn btn--primary" %>
+            <% end %>
           <% end %>
-        <% end %>
-      </div>
-    <% end %>
+        </div>
+      <% end %>
+    </div>
     <%== @deposit_pagy.series_nav %>
   </section>
 </div>
