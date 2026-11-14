@@ -28,17 +28,26 @@ body {
   padding: 16px;
 }
 
-/* ヘッダー：アプリ名と自分の名前だけのシンプルな帯 */
+/* ヘッダー */
 .app-header {
-  background: #0E9F6E;          /* メイン：信頼感のあるグリーン */
+  background: #fff;
   color: #fff;
   padding: 12px 16px;
   font-weight: 700;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  justify-content: flex-start;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 /* フラッシュメッセージ：成功は緑、失敗・注意はアンバー */
 /* 実際のレイアウトのクラス名（flash-notice / flash-alert）に合わせた */
-.flash-notice, .flash-alert { padding: 10px 14px; border-radius: 8px; margin: 12px 0; }
+.flash-notice, .flash-alert { padding: 10px 14px; margin: 12px 0; }
 .flash-notice { background: #D1FAE5; color: #065F46; }
 .flash-alert  { background: #FEF3C7; color: #92400E; }
 
@@ -151,25 +160,8 @@ input[type="password"], textarea {
 
 a.btn { margin-bottom: 16px; }
 
-/* ヘッダー内は白文字に統一し、ログアウトボタンも帯に馴染ませる */
-.app-header a { color: #fff; text-decoration: none; margin-right: 12px;}
 .app-header span { margin-right: 12px;}
 .app-header form { display: inline-block; margin: 0;}
-
-.app-header button {
-  background: #ffffff;        /* 背景を白に */
-  color: #0E9F6E;             /* 文字をヘッダーと同じ緑に */
-  border: 1px solid #ffffff;  /* 枠線も白に */
-  border-radius: 8px; 
-  padding: 4px 12px; 
-  cursor: pointer;
-  font-weight: 700;           /* 文字を少し太く */
-}
-
-/* カーソルを乗せた時に少し透けさせる */
-.app-header button:hover {
-  opacity: 0.8;
-}
 
 input[type="date"] {
 width: 100%; box-sizing: border-box; padding: 10px 12px;
@@ -197,7 +189,6 @@ border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;
 
 /* ホバーで少しだけ反応を返す */
 .btn:hover { opacity: 0.9; }
-.goal-card:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
 
 .members-list { list-style: none; padding: 0; margin: 0; }
 .member-row {
@@ -217,17 +208,9 @@ border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;
 .detail-col .deposit-card { background: #F7F9F8; }  /* 白いパネル上でカードを浮かせる */
 
 @media (min-width: 900px) {
-  .detail-grid { grid-template-columns: 340px 1fr; align-items: start; }
+  .detail-grid { grid-template-columns: 1fr 360px; align-items: start; }
   .detail-col--wide { grid-column: 1 / -1; }
 }
-
-
-.app-header .nav-user {
-  background: rgba(255, 255, 255, 0.18);
-  padding: 4px 10px; border-radius: 999px;
-}
-
-.app-header a:hover { text-decoration: underline; }
 
 .goals-grid { display: grid; gap: 16px; }
 .goals-grid .goal-card { margin-bottom: 0; }
@@ -263,33 +246,9 @@ border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;
 .flash-alert { border-left: 4px solid #DC2626; }
 ul.flash-alert { list-style-position: inside; }
 
-.app-header nav { display: flex; align-items: center; gap: 12px; }
-.nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.app-header nav { display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; flex-shrink: 0; order: 2; }
 .nav-right form { margin: 0; }
-
-/* ヘッダー全体を横並び（Flexbox）にし、左右に振り分ける */
-.app-header {
-  background: #0E9F6E;
-  color: #fff;
-  padding: 12px 16px;
-  font-weight: 700;
-  display: flex;                /* 追加：横並びにする */
-  align-items: center;          /* 追加：縦の中央で揃える */
-  justify-content: space-between; /* 追加：左と右にパカッと分ける */
-}
-
-/* ヘッダー内のナビゲーション（左側・右側）の調整 */
-.app-header nav { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-}
-
-.nav-right { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-}
 
 /* ================= ステップ9：テーマ刷新 ================= */
 /* 土台 */
@@ -297,21 +256,14 @@ body { background: #F6F8F7; }
 h1 { font-size: 24px; letter-spacing: 0.02em; }
 h2 { font-size: 18px; letter-spacing: 0.02em; }
 
-/* ヘッダー：白＋影、1行固定、右グループは右端 */
-.app-header {
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.08);
-  position: sticky; top: 0; z-index: 10;
-}
-.app-header nav { flex-wrap: nowrap; }
-.app-header a { color: #374151; text-decoration: none; font-weight: 600; }
+/* ヘッダーリンクとユーザー名 */
+.app-header a { color: #374151; text-decoration: none; font-weight: 600; margin-right: 0; }
 .app-header a:hover { color: #0B7A55; text-decoration: none; }
-.app-header .brand-link { color: #0B7A55; font-size: 18px; font-weight: 800; }
+.app-header .brand-link { color: #0B7A55; font-size: 18px; font-weight: 800; order: 1; }
 .app-header .nav-user {
-  background: #E6F7F0; color: #0B7A55;
+  background: #E6F7F0; color: #0B7A55; padding: 4px 10px; border-radius: 999px;
   white-space: nowrap; font-weight: 700;
 }
-.nav-right { flex-shrink: 0; }
 .btn--header {
   background: #fff; color: #374151; border: 1px solid #D1D5DB;
 }
@@ -332,8 +284,6 @@ h2 { font-size: 18px; letter-spacing: 0.02em; }
 
 /* 進捗バー：太く、角は丸く */
 .progress__bar { height: 10px; border-radius: 999px; background: #E5E7EB; }
-.progress__fill { border-radius: 999px; }
-
 /* 入力欄：フォーカスで緑のリング */
 input[type="text"], input[type="email"], input[type="password"],
 input[type="number"], input[type="date"], textarea {
@@ -386,15 +336,7 @@ input:focus, textarea:focus {
 .app-header a, .app-header .nav-user, .app-header .btn--header {
   white-space: nowrap;
 }
-/* ===== ヘッダー最終調整（nav.app-header 前提） ===== */
-.app-header {
-  display: flex; flex-wrap: wrap; align-items: center;
-  gap: 8px 12px; justify-content: flex-start;
-}
-.app-header a { margin-right: 0; }
-.app-header .brand-link { order: 1; }
-.nav-right { order: 2; margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.nav-right form { margin: 0; }
+
 .app-header button {
   background: #F3F4F6; color: #374151;
   border: 1px solid #D1D5DB; border-radius: 10px;
@@ -422,10 +364,6 @@ input:focus, textarea:focus {
   .app-header .nav-user { order: 2; }
   .app-header .nav-profile { order: 3; }
   .app-header .nav-right { order: 4; }
-}
-
-@media (min-width: 900px) {
-  .detail-grid { grid-template-columns: 1fr 360px; align-items: start; }
 }
 
 /* ---------- ERBに足す class の目安（2026-11-13 実際のテンプレートで確認済み） ----------
