@@ -25,7 +25,11 @@
 
   <body>
     <nav class="app-header">
-      <%= link_to "💰 共同貯金", root_path, class: "brand-link" %>
+      <%= link_to root_path, class: "brand-link" do %>
+        <%= image_tag "logo.png", class: "brand-logo", alt: "" %>
+        共同貯金
+      <% end %>
+
       <% if logged_in? %>
         <span class="nav-user"><%= current_user.name %></span>
         <%= link_to "プロフィール編集", edit_user_path(current_user), class: "nav-profile" %>
