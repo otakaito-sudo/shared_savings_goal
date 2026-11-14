@@ -25,7 +25,7 @@
 
   <body>
     <nav class="app-header">
-      <%= link_to "貯金目標", root_path %>
+      <%= link_to "💰 共同貯金", root_path, class: "brand-link" %>
       <% if logged_in? %>
         <span class="nav-user"><%= current_user.name %></span>
         <%= link_to "プロフィール編集", edit_user_path(current_user) %>

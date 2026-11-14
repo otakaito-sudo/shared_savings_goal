@@ -277,6 +277,67 @@ ul.flash-alert { list-style-position: inside; }
   gap: 12px; 
 }
 
+/* ================= ステップ9：テーマ刷新 ================= */
+/* 土台 */
+body { background: #F6F8F7; }
+h1 { font-size: 24px; letter-spacing: 0.02em; }
+h2 { font-size: 18px; letter-spacing: 0.02em; }
+
+/* ヘッダー：白＋影、1行固定、右グループは右端 */
+.app-header {
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.08);
+  position: sticky; top: 0; z-index: 10;
+}
+.app-header nav { flex-wrap: nowrap; }
+.app-header a { color: #374151; text-decoration: none; font-weight: 600; }
+.app-header a:hover { color: #0B7A55; text-decoration: none; }
+.app-header .brand-link { color: #0B7A55; font-size: 18px; font-weight: 800; }
+.app-header .nav-user {
+  background: #E6F7F0; color: #0B7A55;
+  white-space: nowrap; font-weight: 700;
+}
+.nav-right { flex-shrink: 0; }
+.btn--header {
+  background: #fff; color: #374151; border: 1px solid #D1D5DB;
+}
+.btn--header:hover { border-color: #0E9F6E; color: #0B7A55; }
+
+/* カード類：枠線→影、角丸を大きく */
+.goal-card, .detail-col, .step-card, .auth-card, .goal-hero {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06), 0 4px 14px rgba(16, 24, 40, 0.05);
+}
+.goal-card:hover { box-shadow: 0 2px 6px rgba(16, 24, 40, 0.08), 0 8px 20px rgba(16, 24, 40, 0.07); }
+.detail-col .deposit-card { background: #fff; border: 1px solid #EEF2F0; box-shadow: none; }
+
+/* ボタン：角丸と質感 */
+.btn { border-radius: 10px; transition: opacity 0.15s, background 0.15s; }
+.btn--primary:hover { background: #0B7A55; opacity: 1; }
+
+/* 進捗バー：太く、角は丸く */
+.progress__bar { height: 10px; border-radius: 999px; background: #E5E7EB; }
+.progress__fill { border-radius: 999px; }
+
+/* 入力欄：フォーカスで緑のリング */
+input[type="text"], input[type="email"], input[type="password"],
+input[type="number"], input[type="date"], textarea {
+  border-radius: 10px;
+}
+input:focus, textarea:focus {
+  border-color: #0E9F6E; outline: none;
+  box-shadow: 0 0 0 3px rgba(14, 159, 110, 0.15);
+}
+
+/* フラッシュ：角丸を揃える */
+.flash-notice, .flash-alert { border-radius: 12px; }
+
+/* todo-box：影つきカードに */
+.todo-box {
+  border: none; border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06), 0 4px 14px rgba(16, 24, 40, 0.05);
+}
 
 
 /* ---------- ERBに足す class の目安（2026-11-13 実際のテンプレートで確認済み） ----------
