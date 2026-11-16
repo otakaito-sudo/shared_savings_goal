@@ -12,7 +12,7 @@
     </ol>
     <p>
       <%= link_to "目標を作る", new_saving_goal_path, class: "btn btn--primary" %>
-      <%= link_to "使い方をくわしく見る", guide_path %>
+      <%= link_to "使い方をくわしく見る", guide_path, class: "btn btn--secondary" %>
     </p>
   </div>
 <% end %>
@@ -42,4 +42,6 @@
     </div>
   <% end %>
 </div>
-<%== @pagy.series_nav %>
+<% if @pagy.pages > 1 %>
+  <%== @pagy.series_nav %>
+<% end %>

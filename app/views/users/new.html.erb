@@ -1,3 +1,16 @@
+<% content_for :head do %>
+  <style>
+    body {
+      background-color: #FFF9EE;
+      background-image: url('<%= asset_path("login-bg.png") %>');
+      background-size: cover;
+      background-position: center bottom;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+  </style>
+<% end %>
+
 <div class="auth-card">
     <p class="brand">共同貯金</p>
     <p class="brand-tagline">みんなで目標に向かって貯めるアプリ</p>

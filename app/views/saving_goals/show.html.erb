@@ -15,10 +15,13 @@
     <p class="progress__label"><%= @goal.progress_percent %>%</p>
   </div>
   <p class="goal-hero__amount">
-    <% if @goal.achieved? %>
-      <p>🎉 目標を達成しました！</p>
-    <% end %>
     <%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %>
+    <% if @goal.achieved? %>
+      <div class="achieved-banner">
+        <%= image_tag "celebration.png", class: "achieved-banner__img", alt: "" %>
+        <p>目標達成！みんなで貯めきりました！</p>
+      </div>
+    <% end %>
   </p>
   <p class="goal-hero__remaining">
     目標 <%= number_to_currency(@goal.target_amount, unit: "円", precision: 0) %>
@@ -93,21 +96,26 @@
     <% end %>
   </section>
 
-  <section class="detail-col">
-    <% if @goal.accepting_deposits? %>
-        <h2>入金を申請</h2>
-        <%= form_with model: [@goal, @deposit] do |f| %>
-            <%= f.label :request_amount, "金額（円）" %>
-            <%= f.number_field :request_amount, placeholder: "例：5000", min: 1 %>
-            <%= f.submit "申請する", class: "btn btn--primary" %>
-        <% end %>
-    <% end %>
-  </section>
+  <% if @goal.accepting_deposits? %>
+    <section class="detail-col" id="deposit-form">
+      <h2>入金を申請</h2>
+      <%= form_with model: [@goal, @deposit] do |f| %>
+          <%= f.label :request_amount, "金額（円）" %>
+          <%= f.number_field :request_amount, placeholder: "例：5000", min: 1 %>
+          <%= f.submit "申請する", class: "btn btn--primary" %>
+      <% end %>
+    </section>
+  <% end %>
+
 
   <section class="detail-col detail-col--wide">
     <h2>入金申請一覧</h2>
     <% if @deposits.empty? %>
-      <p>まだ入金申請はありません</p>
+      <div class="empty-state">
+        <%= image_tag "jar.png", class: "empty-state__img", alt: "" %>
+        <p class="empty-state__title">まだ入金申請はありません</p>
+        <p class="empty-state__text">最初の入金を申請して、貯金をスタートしましょう。</p>
+      </div>
     <% end %>
     <div class="deposits-grid">
       <% @deposits.each do |d| %>
@@ -152,21 +160,31 @@
         </div>
       <% end %>
     </div>
-    <%== @deposit_pagy.series_nav %>
+    <% if @deposit_pagy.pages > 1 %>
+      <%== @deposit_pagy.series_nav %>
+    <% end %>
   </section>
 </div>
 
-<h2>活動履歴</h2>
-<% if @activities.any? %>
-  <ul class="activities">
-    <% @activities.each do |a| %>
-      <li>
-        <%= l a.created_at, format: :short rescue a.created_at.strftime("%m/%d %H:%M") %>
-        <%= activity_message(a) %>
-      </li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>まだ活動はありません</p>
-<% end %>
-<%= link_to "全ての活動をみる", saving_goal_activities_path(@goal) %>
+<section class="activity-card">
+  <h2>活動履歴</h2>
+  <% if @activities.any? %>
+    <ul class="timeline">
+      <% @activities.each do |a| %>
+        <li class="timeline__item timeline__item--<%= a.kind %>">
+          <span class="timeline__icon">
+            <%= image_tag "icons/activity-#{a.kind}.png", class: "timeline__img", alt: "" %>
+          </span>
+
+          <div class="timeline__body">
+            <p class="timeline__text"><%= activity_message(a) %></p>
+            <p class="timeline__time"><%= l a.created_at, format: :short rescue a.created_at.strftime("%m/%d %H:%M") %></p>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>まだ活動はありません</p>
+  <% end %>
+  <%= link_to "全ての活動をみる →", saving_goal_activities_path(@goal), class: "activity-more" %>
+</section>
