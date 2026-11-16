@@ -6,7 +6,12 @@ class MembershipsController < ApplicationController
   def destroy
     membership=@goal.memberships.find(params[:id])
 
-    ActiveRecord::Base.transaction do
+    @goal.with_lock do
+      # 金額編集・招待承諾と同じ目標ロックを使い、配分の整合性を守る。
+      membership.reload
+      unless @goal.memberships.find_by(user: current_user)&.manager?
+        raise ActiveRecord::RecordNotFound
+      end
       membership.destroy!
       @goal.activities.create!(actor: current_user, kind: :member_removed, target_user: membership.user)
     end

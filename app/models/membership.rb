@@ -13,8 +13,19 @@ class Membership < ApplicationRecord
                                     message: "は既にこの目標に参加しています" }
 
   before_destroy :ensure_another_manager_remains
+  validates :target_amount, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 100_000_000 }
+
+  before_destroy :ensure_target_reallocated
 
   private
+
+
+  def ensure_target_reallocated
+    return if destroyed_by_association || target_amount.zero?
+
+    errors.add(:base, "目標金額を他のメンバーに配分してから外してください")
+    throw :abort
+  end
 
   def ensure_another_manager_remains
     return if destroyed_by_association

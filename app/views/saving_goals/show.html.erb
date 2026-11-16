@@ -50,6 +50,9 @@
       （あと <%= @goal.days_remaining %> 日）
     <% end %>
   </p>
+  <% if @membership&.manager? && @goal.recruiting? %>
+    <%= link_to "目標金額を編集", edit_saving_goal_target_amounts_path(@goal), class: "btn btn--muted" %>
+  <% end %>
 </div>
 
 <% if @my_remanded_deposits.any? || @pending_deposit_count.positive? %>
@@ -98,7 +101,15 @@
                 <% end %>
                   <span class="progress__label">
                     ・ 入金 <%= number_to_currency(@member_totals[m.user_id] || 0, unit: "円", precision: 0) %>
+                    ／ 個人目標 <%= number_to_currency(m.target_amount, unit: "円", precision: 0) %>
                   </span>
+
+                  <% if m.target_amount.positive? && (@member_totals[m.user_id] || 0) >= m.target_amount %>
+                    <span title="個人目標達成">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E9E5A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px;"><path d="M4.5 12.5l5 5L19.5 7"/></svg>
+                    </span>
+                  <% end %>
+
                 <% if @membership&.manager? && m.user != current_user %>
                     <%= button_to "外す", saving_goal_membership_path(@goal, m),
                         method: :delete, form: {data: {turbo_confirm: "外しますか？"}}, class: "btn btn--muted" %>

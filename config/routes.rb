@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     resources :deposits, only: [ :create ]
     resources :invitations, only: [ :create, :destroy ], module: :saving_goals
     resources :activities, only: [ :index ], module: :saving_goals
+    resource :target_amounts, only: [ :edit, :update ], controller: "target_amounts"
   end
 
   resources :deposits, only: [] do

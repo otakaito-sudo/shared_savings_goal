@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_16_061338) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_065342) do
   create_table "activities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "saving_goal_id", null: false
     t.bigint "actor_id", null: false
@@ -68,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_061338) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "target_amount", default: 0, null: false
+    t.integer "personal_target_amount"
     t.index ["saving_goal_id", "user_id"], name: "index_memberships_on_saving_goal_id_and_user_id", unique: true
     t.index ["saving_goal_id"], name: "index_memberships_on_saving_goal_id"
     t.index ["user_id"], name: "index_memberships_on_user_id"

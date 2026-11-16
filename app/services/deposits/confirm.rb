@@ -22,9 +22,6 @@ module Deposits
           goal.achieved!
           goal.activities.create!(actor: @reviewer, kind: :goal_achieved)
         end
-
-        goal.achieved! if new_total == goal.target_amount
-
         @deposit
       end
     end

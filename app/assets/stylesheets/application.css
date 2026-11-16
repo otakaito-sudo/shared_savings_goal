@@ -445,6 +445,15 @@ input:focus, textarea:focus {
 .role-option__input:checked + .role-option__card { border-color: #EA580C; background: #FFF7ED; }
 .role-option__input:checked + .role-option__card .role-option__check { background: #EA580C; border-color: #EA580C; }
 .role-option__input:focus-visible + .role-option__card { outline: 2px solid #EA580C; outline-offset: 2px; }
+/* 全体目標と個人目標の一括編集 */
+.target-editor { max-width: 700px; margin: 24px auto; padding: 24px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; }
+.target-editor__row { display: grid; grid-template-columns: minmax(130px, 1fr) minmax(120px, 220px); gap: 12px; align-items: center; margin: 12px 0; }
+.target-editor__row input { width: 100%; }
+.target-editor__summary { font-weight: 700; }
+.target-editor__errors { color: #991b1b; background: #fef2f2; padding: 8px 16px; border-radius: 8px; }
+.target-editor__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+@media (max-width: 480px) { .target-editor__row { grid-template-columns: 1fr; gap: 4px; } }
+
 
 /* ---------- ERBに足す class の目安（2026-11-13 実際のテンプレートで確認済み） ----------
    一覧 (saving_goals/index)：変数は @goals、状態は goal.display_status で、

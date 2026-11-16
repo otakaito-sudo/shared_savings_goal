@@ -1,0 +1,30 @@
+<% content_for :container_class, "container--wide" %>
+<section class="target-editor">
+  <h1>目標金額を編集</h1>
+  <p><%= @goal.name %> の全体目標と個人目標をまとめて変更します。</p>
+  <p>個人目標の合計と全体目標を一致させてください。全体目標は確認済み入金額（<%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %>）より大きく設定してください。</p>
+  <% if @form_errors.any? %>
+    <div class="target-editor__errors" role="alert">
+      <ul><% @form_errors.each do |error| %><li><%= error %></li><% end %></ul>
+    </div>
+  <% end %>
+  <%= form_with url: saving_goal_target_amounts_path(@goal), method: :patch, data: { controller: "target-amounts", action: "input->target-amounts#update" } do %>
+    <div class="target-editor__row">
+      <%= label_tag :target_amount, "全体目標（円）" %>
+      <%= number_field_tag :target_amount, @submitted_total.nil? ? @goal.target_amount : @submitted_total, min: 1, max: 100_000_000, step: 1, required: true, data: { target_amounts_target: "total" } %>
+    </div>
+    <h2>個人目標</h2>
+    <% @memberships.each do |membership| %>
+      <div class="target-editor__row">
+        <%= label_tag "member_target_#{membership.id}", "#{membership.user.name}さん（円）" %>
+        <%= number_field_tag "member_targets[#{membership.id}]", @submitted_members ? @submitted_members[membership.id.to_s] : membership.target_amount, id: "member_target_#{membership.id}", min: 0, max: 100_000_000, step: 1, required: true, data: { target_amounts_target: "member" } %>
+      </div>
+    <% end %>
+    <p class="target-editor__summary" aria-live="polite" data-target-amounts-target="summary">個人目標の合計と全体目標を確認してください。</p>
+    <button type="button" class="btn btn--muted" data-action="target-amounts#applySum">個人目標の合計を全体目標に反映</button>
+    <div class="target-editor__actions">
+      <%= submit_tag "保存する", class: "btn btn--primary" %>
+      <%= link_to "キャンセル", saving_goal_path(@goal), class: "btn btn--muted" %>
+    </div>
+  <% end %>
+</section>
