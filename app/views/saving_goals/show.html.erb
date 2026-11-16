@@ -107,24 +107,48 @@
         <% end %>
     </ul>
 
-    <% if @membership&.manager? && @goal.open? %>
-      <%= form_with url: saving_goal_invitations_path(@goal) do |f| %>
-        <%= f.email_field :email, placeholder: "招待する人のメールアドレス", required: true %>
-        <%= f.submit "招待メールを送る", class: "btn btn--muted" %>
-      <% end %>
-    <% end %>
 
-    <% if @pending_invitations.present? %>
-        <h3>承諾待ちの招待</h3>
-        <ul>
-            <% @pending_invitations.each do |inv| %>
-                <li class="member-row">
-                    <%= inv.email %> (期限：<%= inv.expires_at.to_date %>)
-                    <%= button_to "取り消す", saving_goal_invitation_path(@goal, inv),
-                        method: :delete, form: {data: {turbo_confirm: "招待を取り消しますか？"}}, class: "btn btn--muted" %>
-                </li>
-            <% end %>
-        </ul>
+    <% if @membership&.manager? %>
+      <section class="invite-card">
+        <h3>メンバーを招待する</h3>
+        <% if @goal.open? %>
+          <%= form_with url: saving_goal_invitations_path(@goal) do |f| %>
+            <%= f.email_field :email, placeholder: "招待する人のメールアドレス", required: true %>
+            <p class="role-picker__label">招待する役割</p>
+            <div class="role-picker">
+              <label class="role-option">
+                <%= f.radio_button :role, "member", checked: true, class: "role-option__input" %>
+                <span class="role-option__card">
+                  <span class="role-option__title">メンバー</span>
+                  <span class="role-option__desc">入金の申請ができます</span>
+                </span>
+              </label>
+              <label class="role-option">
+                <%= f.radio_button :role, "manager", class: "role-option__input" %>
+                <span class="role-option__card">
+                  <span class="role-option__title">管理者</span>
+                  <span class="role-option__desc">入金の確認やメンバーの管理ができます</span>
+                </span>
+              </label>
+            </div>
+            <%= f.submit "招待メールを送る", class: "btn btn--primary" %>
+          <% end %>
+        <% else %>
+          <p class="progress__label">募集を終了した目標には招待できません</p>
+        <% end %>
+        <% if @pending_invitations.present? %>
+            <h3>承諾待ちの招待</h3>
+            <ul>
+                <% @pending_invitations.each do |inv| %>
+                    <li class="member-row">
+                        <%= inv.email %> (期限：<%= inv.expires_at.to_date %>)
+                        <%= button_to "取り消す", saving_goal_invitation_path(@goal, inv),
+                            method: :delete, form: {data: {turbo_confirm: "招待を取り消しますか？"}}, class: "btn btn--muted" %>
+                    </li>
+                <% end %>
+            </ul>
+        <% end %>
+      </section>
     <% end %>
   </section>
 

@@ -20,7 +20,8 @@ module SavingGoals
         return redirect_to @goal, alert: "その人はすでに参加しています"
       end
 
-      invitation=@goal.invitations.new(invited_by: current_user, email: email)
+      role = Membership.roles.key?(params[:role]) ? params[:role] : "member"
+      invitation = @goal.invitations.new(invited_by: current_user, email: email, role: role)
       unless invitation.valid?
         return redirect_to @goal, alert: invitation.errors.full_messages.to_sentence
       end

@@ -17,6 +17,8 @@ class Invitation < ApplicationRecord
     where(accepted_at: nil, revoked_at: nil).where("expires_at > ?", Time.current)
   }
 
+  enum :role, { member: 0, manager: 1 }, validate: true
+
   def authenticated?(given_token)
     return false if token_digest.blank? || given_token.blank?
 

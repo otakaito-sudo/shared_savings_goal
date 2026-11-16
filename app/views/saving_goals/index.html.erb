@@ -50,6 +50,7 @@
       </p>
       <p class="progress__label">
         残り <%= number_to_currency(goal.remaining_amount, unit: "円", precision: 0) %> ・ 期限 <%= goal.deadline %>
+        ・ 参加メンバー <%= @member_counts[goal.id] || 0 %>人
       </p>
     </div>
   <% end %>

@@ -434,6 +434,18 @@ input:focus, textarea:focus {
 .bars__bar { width: 70%; max-width: 44px; min-height: 4px; background: linear-gradient(#FB923C, #EA580C); border-radius: 8px 8px 4px 4px; }
 .bars__label { font-size: .75rem; color: #9CA3AF; }
 
+.role-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0 12px; }
+.role-picker__label { font-weight: 700; margin: 12px 0 0; }
+.role-option { position: relative; display: flex; cursor: pointer; }
+.role-option__input { position: absolute; opacity: 0; }
+.role-option__card { position: relative; flex: 1; border: 2px solid #E5E7EB; border-radius: 14px; padding: 12px; background: #fff; }
+.role-option__title { display: block; font-weight: 700; }
+.role-option__desc { display: block; font-size: .8rem; color: #6B7280; margin-top: 2px; text-wrap: balance; }
+.role-option__check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #D1D5DB; color: #fff; font-size: .65rem; line-height: 15px; text-align: center; }
+.role-option__input:checked + .role-option__card { border-color: #EA580C; background: #FFF7ED; }
+.role-option__input:checked + .role-option__card .role-option__check { background: #EA580C; border-color: #EA580C; }
+.role-option__input:focus-visible + .role-option__card { outline: 2px solid #EA580C; outline-offset: 2px; }
+
 /* ---------- ERBに足す class の目安（2026-11-13 実際のテンプレートで確認済み） ----------
    一覧 (saving_goals/index)：変数は @goals、状態は goal.display_status で、
      完成形は design-step1-2-apply.md の「3. index.html.erb 完成形」をそのまま貼ればよい。

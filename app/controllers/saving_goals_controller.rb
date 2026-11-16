@@ -12,6 +12,8 @@ class SavingGoalsController < ApplicationController
                     .sum(:request_amount)
     @pagy, @goals = pagy(:offset,
       current_user.saving_goals.includes(:creator).order(deadline: :asc, id: :asc))   # includeは作成者を先読みして、n+1問題を防ぐ
+    @member_counts = Membership.where(saving_goal_id: @goals.map(&:id))
+                           .group(:saving_goal_id).count
   end
 
   def show
