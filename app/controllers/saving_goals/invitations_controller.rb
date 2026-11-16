@@ -4,7 +4,7 @@ module SavingGoals
     before_action :set_goal
     before_action :require_manager
 
-    # 招待メールの大量送信を防ぐ（管理者ごとに1時間20通まで）　　　<- いるかな？？？
+    # 招待メールの大量送信を防ぐ（リーダーごとに1時間20通まで）　　　<- いるかな？？？
     rate_limit to: 20, within: 1.hour, only: :create,
                by: -> { current_user.id },
                with: -> { redirect_to @goal, alert: "招待の送信回数が多過ぎます。時間を置いて試してください" }

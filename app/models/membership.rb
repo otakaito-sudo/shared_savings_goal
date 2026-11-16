@@ -32,7 +32,7 @@ class Membership < ApplicationRecord
     return unless manager?
     return if saving_goal.memberships.manager.where.not(id: id).exists?
 
-    errors.add(:base, "最後の管理者は外せません")
+    errors.add(:base, "最後のリーダーは外せません")
     throw :abort
   end
 end

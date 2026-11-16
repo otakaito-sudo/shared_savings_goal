@@ -2,7 +2,7 @@ require "test_helper"
 
 class PaginationTest < ActionDispatch::IntegrationTest
   setup do
-    @manager = create_activated_user("管理者", "manager-#{SecureRandom.hex(4)}@example.com")
+    @manager = create_activated_user("リーダー", "manager-#{SecureRandom.hex(4)}@example.com")
     @goal = create_goal(creator: @manager)
     join(goal: @goal, user: @manager, role: :manager)
 

@@ -3,13 +3,13 @@ require "test_helper"
 class InvitationsSendingTest < ActionDispatch::IntegrationTest
   setup do
     ActionMailer::Base.deliveries.clear
-    @manager=create_activated_user("管理者", "manager-#{SecureRandom.hex(4)}@example.com")
+    @manager=create_activated_user("リーダー", "manager-#{SecureRandom.hex(4)}@example.com")
     @goal=create_goal(creator: @manager)
     join(goal: @goal, user: @manager, role: :manager)
     @invitee_email="invitee-#{SecureRandom.hex(4)}@exmaple.com"
   end
 
-  test "管理者が招待を送り、メールのリンクから承諾できる" do
+  test "リーダーが招待を送り、メールのリンクから承諾できる" do
     log_in_as(@manager)
 
     assert_difference "Invitation.count", 1 do
@@ -39,7 +39,7 @@ class InvitationsSendingTest < ActionDispatch::IntegrationTest
     assert @goal.memberships.exists?(user: invitee, role: :member)
   end
 
-  test "管理者ではないメンバーは招待できない" do
+  test "リーダーではないメンバーは招待できない" do
     member=create_activated_user("メンバー", "member-#{SecureRandom.hex(4)}@example.com")
     join(goal: @goal, user: member)
     log_in_as(member)

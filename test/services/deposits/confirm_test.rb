@@ -2,7 +2,7 @@ require "test_helper"
 
 class Deposits::ConfirmTest < ActiveSupport::TestCase
   setup do
-    @manager=create_user(name: "管理者")
+    @manager=create_user(name: "リーダー")
     @member=create_user(name: "メンバー")
     @goal=create_goal(creator: @manager, target_amount: 100_000)
     join(goal: @goal, user: @manager, role: :manager)
@@ -45,7 +45,7 @@ class Deposits::ConfirmTest < ActiveSupport::TestCase
     assert_equal 1_000, @goal.reload.current_amount
   end
 
-  test "管理者以外は確認できない" do
+  test "リーダー以外は確認できない" do
     assert_raises(Deposits::Base::NotAuthorized) do
       Deposits::Confirm.new(deposit: create_deposit(1_000), reviewer: @member).call
     end

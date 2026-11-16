@@ -1,8 +1,8 @@
 require "test_helper"
 
 class ActivitiesTest < ActionDispatch::IntegrationTest
-  setup do # 管理者、メンバー、目標の作成
-    @manager=create_activated_user("管理者", "manager-#{SecureRandom.hex(4)}@example.com")
+  setup do # リーダー、メンバー、目標の作成
+    @manager=create_activated_user("リーダー", "manager-#{SecureRandom.hex(4)}@example.com")
     @member=create_activated_user("メンバー", "member-#{SecureRandom.hex(4)}@example.com")
     @goal=create_goal(creator: @manager)
     join(goal: @goal, user: @manager, role: :manager)
@@ -19,7 +19,7 @@ class ActivitiesTest < ActionDispatch::IntegrationTest
 
     delete logout_path
     log_in_as(@manager)
-    patch confirm_deposit_path(deposit)   # 管理者が申請を確認する
+    patch confirm_deposit_path(deposit)   # リーダーが申請を確認する
 
     activity=@goal.activities.recent.first  # 最新の履歴が確認で、実行者がmanager、金額が1000円であることを確認
     assert activity.deposit_confirmed?
@@ -27,7 +27,7 @@ class ActivitiesTest < ActionDispatch::IntegrationTest
     assert_equal 1000, activity.amount
 
     get saving_goal_path(@goal)         # 目標の詳細画面を開いて、履歴の文章が画面に表示されているか確認
-    assert_select "ul.activities li", text: /管理者さんが1,000円の入金を確認しました/
+    assert_select "ul.activities li", text: /リーダーさんが1,000円の入金を確認しました/
     assert_select "ul.activities li", text: /メンバーさんが1,000円の入金を申請しました/
   end
 

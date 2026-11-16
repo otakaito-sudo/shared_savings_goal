@@ -2,7 +2,7 @@ require "test_helper"
 
 class InvitationsRevocationTest < ActionDispatch::IntegrationTest
   setup do
-    @manager=create_activated_user("管理者", "manager-#{SecureRandom.hex(4)}@example.com")
+    @manager=create_activated_user("リーダー", "manager-#{SecureRandom.hex(4)}@example.com")
     @goal=create_goal(creator: @manager)
     join(goal: @goal, user: @manager, role: :manager)
 
@@ -11,7 +11,7 @@ class InvitationsRevocationTest < ActionDispatch::IntegrationTest
     @token=@invitation.token
   end
 
-  test "管理者は承諾待ちの招待を確認して取り消せる" do
+  test "リーダーは承諾待ちの招待を確認して取り消せる" do
     log_in_as(@manager)
 
     get saving_goal_path(@goal)
@@ -38,7 +38,7 @@ class InvitationsRevocationTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "管理者ではないメンバーには一覧がみえず。取り消しもできない" do
+  test "リーダーではないメンバーには一覧がみえず。取り消しもできない" do
     member=create_activated_user("メンバー", "member-#{SecureRandom.hex(4)}@example.com")
     join(goal: @goal, user: member)
     log_in_as(member)

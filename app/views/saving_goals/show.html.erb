@@ -95,7 +95,7 @@
             <li class="member-row">
                 <%= m.user.name %>
                 <% if m.manager? %>
-                  <span class="badge badge--open">管理者</span>
+                  <span class="badge badge--open">リーダー</span>
                 <% else %>
                   <span class="badge badge--pending">メンバー</span>
                 <% end %>
@@ -137,7 +137,7 @@
               <label class="role-option">
                 <%= f.radio_button :role, "manager", class: "role-option__input" %>
                 <span class="role-option__card">
-                  <span class="role-option__title">管理者</span>
+                  <span class="role-option__title">リーダー</span>
                   <span class="role-option__desc">入金の確認やメンバーの管理ができます</span>
                 </span>
               </label>

@@ -2,7 +2,7 @@ require "test_helper"
 
 class Deposits::RemandTest < ActiveSupport::TestCase
   setup do
-    @manager=create_user(name: "管理者")
+    @manager=create_user(name: "リーダー")
     @member=create_user(name: "メンバー")
     @goal=create_goal(creator: @manager, target_amount: 100_000)
     join(goal: @goal, user: @manager, role: :manager)

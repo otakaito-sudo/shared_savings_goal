@@ -89,6 +89,8 @@ body {
   padding: 20px 16px;
   margin-bottom: 16px;
 }
+
+
 .goal-hero .progress__bar { height: 16px; }     /* ヒーローではさらに太く */
 .goal-hero__amount { font-size: 1.6rem; font-weight: 700; }
 .goal-hero__remaining { color: #6B7280; }
@@ -454,7 +456,11 @@ input:focus, textarea:focus {
 .target-editor__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
 @media (max-width: 480px) { .target-editor__row { grid-template-columns: 1fr; gap: 4px; } }
 
-
+.goal-hero {
+  background-image: image-url("travel-bg.png");
+  background-size: cover;
+  background-position: center;
+}
 /* ---------- ERBに足す class の目安（2026-11-13 実際のテンプレートで確認済み） ----------
    一覧 (saving_goals/index)：変数は @goals、状態は goal.display_status で、
      完成形は design-step1-2-apply.md の「3. index.html.erb 完成形」をそのまま貼ればよい。

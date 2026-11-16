@@ -43,7 +43,7 @@ class GoalAuthorizationTest < ActionDispatch::IntegrationTest
     assert @deposit.reload.pending?
   end
 
-  test "管理者は入金を承認できる" do
+  test "リーダーは入金を承認できる" do
     log_in_as(@manager)
     patch confirm_deposit_path(@deposit)
     assert @deposit.reload.confirmed?
@@ -58,15 +58,15 @@ class GoalAuthorizationTest < ActionDispatch::IntegrationTest
   #   assert_not_nil flash[:alert]
   # end
 
-  test "最後の管理者は外せない" do
+  test "最後のリーダーは外せない" do
     log_in_as(@manager)
     assert_no_difference "Membership.count" do
       delete saving_goal_membership_path(@goal, @manager_membership)
     end
-    assert_equal "最後の管理者は外せません", flash[:alert]
+    assert_equal "最後のリーダーは外せません", flash[:alert]
   end
 
-  test "他に管理者がいれば管理者を外せる" do
+  test "他にリーダーがいればリーダーを外せる" do
     other_manager=create_activated_user("Other", "other@example.com")
     other_membership=@goal.memberships.create!(user: other_manager, role: :manager)
     log_in_as(@manager)

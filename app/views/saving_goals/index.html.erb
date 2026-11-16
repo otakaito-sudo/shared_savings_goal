@@ -2,25 +2,13 @@
 <h1>貯金目標</h1>
 <%= link_to "新規作成", new_saving_goal_path, class: "btn btn--primary" %>
 
-<% if @goals.any? %>
-  <div class="summary-card">
-    <p class="summary-card__label">みんなで貯めた合計</p>
-    <p class="summary-card__total"><%= number_to_currency(@total_saved, unit: "円", precision: 0) %></p>
-    <div class="summary-card__stats">
-      <span>参加中の目標 <%= @goals_count %>件</span>
-      <span>達成 <%= @achieved_count %>件</span>
-      <span>今月の入金 <%= number_to_currency(@month_saved, unit: "円", precision: 0) %></span>
-    </div>
-  </div>
-<% end %>
-
 <% if @goals.empty? %>
   <div class="goal-card">
     <h2>ようこそ！まずは目標を作りましょう</h2>
     <ol>
       <li>目標を作る（金額と期限を決める）</li>
       <li>メンバーを招待する（メールアドレスで招待）</li>
-      <li>入金を申請して、管理者に確認してもらう</li>
+      <li>入金を申請して、リーダーに確認してもらう</li>
     </ol>
     <p>
       <%= link_to "目標を作る", new_saving_goal_path, class: "btn btn--primary" %>
