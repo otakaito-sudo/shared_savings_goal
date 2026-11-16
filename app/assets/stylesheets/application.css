@@ -416,6 +416,23 @@ input:focus, textarea:focus {
 .activity-more:hover { text-decoration:underline; }
 
 .timeline__img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: block; }
+.summary-card { background: linear-gradient(135deg, #FB923C, #EA580C); color: #fff; border-radius: 20px; padding: 20px; margin: 16px 0; }
+.summary-card__label { margin: 0; opacity: .85; }
+.summary-card__total { margin: 4px 0 12px; font-size: 2rem; font-weight: 800; }
+.summary-card__stats { display: flex; flex-wrap: wrap; gap: 8px; }
+.summary-card__stats span { background: rgba(255,255,255,.22); border-radius: 999px; padding: 4px 12px; font-size: .85rem; }
+
+.share-bar { display: flex; height: 16px; border-radius: 999px; overflow: hidden; background: #F3F4F6; margin-top: 12px; }
+.share-bar__seg { height: 100%; }
+.share-legend { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.share-legend li { display: flex; align-items: center; gap: 6px; font-size: .9rem; }
+.share-legend__dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+.chart-card { background: #fff; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.08); padding: 20px; margin-top: 24px; }
+.bars { display: flex; align-items: flex-end; gap: 10px; height: 140px; margin-top: 8px; }
+.bars__col { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
+.bars__bar { width: 70%; max-width: 44px; min-height: 4px; background: linear-gradient(#FB923C, #EA580C); border-radius: 8px 8px 4px 4px; }
+.bars__label { font-size: .75rem; color: #9CA3AF; }
 
 /* ---------- ERBに足す class の目安（2026-11-13 実際のテンプレートで確認済み） ----------
    一覧 (saving_goals/index)：変数は @goals、状態は goal.display_status で、

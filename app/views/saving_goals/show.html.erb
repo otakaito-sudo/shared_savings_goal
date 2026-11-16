@@ -7,13 +7,28 @@
     <span class="badge badge--<%= badge %>"><%= t("goals.status.#{@goal.display_status}", locale: :ja) %></span>
   </h1>
   <p><%= @goal.purpose %></p>
-  <div class="progress">
-    <div class="progress__bar">
-      <div class="progress__fill<%= " progress__fill--done" if @goal.achieved? %>"
-           style="width: <%= @goal.progress_percent %>%"></div>
-    </div>
-    <p class="progress__label"><%= @goal.progress_percent %>%</p>
+
+  <% colors = ["#EA580C", "#F59E0B", "#0E9F6E", "#3B82F6", "#EC4899", "#8B5CF6"] %>
+  <div class="share-bar share-bar--hero">
+    <% if @goal.target_amount.positive? %>
+      <% @goal.memberships.includes(:user).each_with_index do |m, i| %>
+        <% total = @member_totals[m.user_id] || 0 %>
+        <% next if total.zero? %>
+        <div class="share-bar__seg"
+             style="width: <%= [(total * 100.0 / @goal.target_amount).round(1), 100].min %>%; background: <%= colors[i % colors.size] %>"
+             title="<%= m.user.name %> <%= number_to_currency(total, unit: "円", precision: 0) %>"></div>
+      <% end %>
+    <% end %>
   </div>
+  <p class="progress__label"><%= @goal.progress_percent %>%</p>
+  <ul class="share-legend">
+    <% @goal.memberships.includes(:user).each_with_index do |m, i| %>
+      <% total = @member_totals[m.user_id] || 0 %>
+      <% next if total.zero? %>
+      <li><span class="share-legend__dot" style="background: <%= colors[i % colors.size] %>"></span><%= m.user.name %> <%= number_to_currency(total, unit: "円", precision: 0) %></li>
+    <% end %>
+  </ul>
+
   <p class="goal-hero__amount">
     <%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %>
     <% if @goal.achieved? %>
@@ -51,6 +66,23 @@
       <p>確認待ちの入金が <%= @pending_deposit_count %> 件あります。下の入金申請一覧から確認してください。</p>
     <% end %>
   </div>
+<% end %>
+
+<% if @chart_points.any? && @goal.target_amount.positive? %>
+  <section class="chart-card">
+    <h2>貯まり具合</h2>
+    <div class="bars">
+      <% @chart_points.each do |date, total| %>
+        <div class="bars__col">
+          <div class="bars__bar"
+               style="height: <%= [(total * 100.0 / @goal.target_amount).round(1), 100].min %>%"
+               title="<%= date.strftime("%m/%d") %> 時点で <%= number_to_currency(total, unit: "円", precision: 0) %>"></div>
+          <span class="bars__label"><%= date.strftime("%m/%d") %></span>
+        </div>
+      <% end %>
+    </div>
+    <p class="progress__label">目標 <%= number_to_currency(@goal.target_amount, unit: "円", precision: 0) %> に対する積み上がり</p>
+  </section>
 <% end %>
 <div class="detail-grid">
   <section class="detail-col">
