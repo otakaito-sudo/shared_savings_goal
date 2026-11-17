@@ -167,9 +167,13 @@
     <section class="detail-col" id="deposit-form">
       <h2>入金を申請</h2>
       <%= form_with model: [@goal, @deposit] do |f| %>
+          <p>
           <%= f.label :request_amount, "金額（円）" %>
           <%= f.number_field :request_amount, placeholder: "例：5000", min: 1 %>
+          </p>
+          <p>
           <%= f.submit "申請する", class: "btn btn--primary" %>
+          </p>
       <% end %>
     </section>
   <% end %>

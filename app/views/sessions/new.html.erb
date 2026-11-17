@@ -1,32 +1,38 @@
-<% content_for :head do %>
-  <style>
-    body {
-      background-color: #FFF9EE;
-      background-image: url('<%= asset_path("login-bg.png") %>');
-      background-size: cover;
-      background-position: center bottom;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-    }
-  </style>
-<% end %>
+<div class="login-page-container">
+  <div class="modern-auth-card">
+    <div class="auth-header">
+      <p class="brand-text">共同貯金</p>
+      <p class="brand-subtext">みんなで目標に向かって貯めるアプリ</p>
+    </div>
 
-<div class="auth-card">
-    <p class="brand"> 共同貯金 </p>
-    <p class="brand-tagline">みんなで目標に向かって貯めるアプリ</p>
-    <h1>ログイン</h1>
-    <%= form_with url: login_path do |f| %>
-        <%= f.email_field :email, placeholder: "メールアドレス" %>
-        <%= f.password_field :password, placeholder: "パスワード" %>
+    <h1 class="auth-title">ログイン</h1>
 
-        <%= label_tag :remember_me do %>
-            <%= check_box_tag :remember_me, "1" %>
-            ログインしたままにする
+    <%= form_with url: login_path, class: "auth-form" do |f| %>
+      <div class="form-group">
+        <%= f.email_field :email, placeholder: "メールアドレス", class: "modern-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.password_field :password, placeholder: "パスワード", class: "modern-input" %>
+      </div>
+
+      <!-- チェックボックスとパスワード忘れリンクを横並びに配置 -->
+      <div class="form-options">
+        <%= label_tag :remember_me, class: "remember-label" do %>
+          <%= check_box_tag :remember_me, "1", false, class: "custom-checkbox" %>
+          <span>ログイン維持</span>
         <% end %>
+        
+        <%= link_to "パスワードを忘れた方", new_password_reset_url, class: "forgot-link" %>
+      </div>
 
-        <%= f.submit "ログイン", class: "btn btn--primary" %>
+      <%= f.submit "ログイン", class: "modern-btn" %>
     <% end %>
 
-    <%= link_to "パスワードを忘れた方", new_password_reset_url %>
-    <p>アカウントをお持ちでない方 <%= link_to "ユーザー登録はこちら", new_user_path %></p>
+    <div class="auth-footer">
+      <span class="text-gray">初めての方ですか？</span>
+      <%= link_to "新規登録はこちら", new_user_path, class: "register-link" %>
+    </div>
+    
+  </div>
 </div>

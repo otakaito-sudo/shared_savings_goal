@@ -461,6 +461,326 @@ input:focus, textarea:focus {
   background-size: cover;
   background-position: center;
 }
+
+/* ヘッダー：スマホは2段、PCは1段 */
+.app-header {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.app-header .brand-link {
+  order: 1;
+  align-self: flex-start;
+  flex-shrink: 0;
+}
+
+.app-header .nav-actions {
+  order: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* 既存の画面幅別 order 指定をリセット */
+.app-header .nav-actions > * {
+  order: 0;
+}
+
+.app-header .nav-user {
+  flex-shrink: 0;
+  max-width: 8em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 0;
+}
+
+.app-header .nav-profile,
+.app-header .nav-right {
+  flex-shrink: 0;
+}
+
+@media (min-width: 900px) {
+  .app-header {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .app-header .brand-link {
+    align-self: center;
+  }
+
+  .app-header .nav-actions {
+    flex: 1;
+  }
+}
+/* プロフィール編集 */
+.profile-page {
+  max-width: 560px;
+  margin: 16px auto 48px;
+}
+
+.profile-page__header {
+  margin-bottom: 24px;
+}
+
+.profile-page__header h1 {
+  margin: 0 0 8px;
+}
+
+.profile-page__header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.profile-card {
+  background: #fff;
+  border: 1px solid #f0e8e1;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.05);
+}
+
+.profile-card h2 {
+  margin: 0 0 8px;
+}
+
+.profile-card__description {
+  margin: 0 0 24px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.profile-field {
+  margin-bottom: 20px;
+}
+
+.profile-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.profile-email {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  background: #fffbf7;
+  border-radius: 10px;
+}
+
+.profile-email__label {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.profile-email__value {
+  overflow-wrap: anywhere;
+}
+
+.profile-button {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-button--primary {
+  background: #c2410c;
+  color: #fff;
+}
+
+.profile-button--primary:hover {
+  background: #9a3412;
+}
+
+.profile-button--secondary {
+  background: #fff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.profile-button--secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.profile-button:focus-visible {
+  outline: 3px solid #fb923c;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .profile-card {
+    padding: 20px;
+  }
+
+  .profile-button {
+    width: 100%;
+  }
+}
+
+/* --- 画面全体の背景とレイアウト --- */
+.login-page-container {
+  /* CSSファイルから画像を読み込む場合は /assets/ から指定します */
+  background-color: #FFF9EE;
+  background-image: url('/assets/login-bg.png');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  
+  /* application.html.erb の container の余白を相殺して全画面表示にする */
+  margin: -16px; 
+}
+
+/* --- モダンなログインカード --- */
+.modern-auth-card {
+  background-color: rgba(255, 255, 255, 0.98);
+  width: 100%;
+  max-width: 420px;
+  padding: 48px 40px;
+  border-radius: 24px; /* 丸みを強くして優しい印象に */
+  box-shadow: 0 10px 40px rgba(242, 92, 59, 0.08); /* 影に少しだけオレンジを混ぜる */
+  box-sizing: border-box;
+}
+
+/* --- テキスト周り --- */
+.auth-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brand-text {
+  color: #F25C3B;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin: 0 0 4px 0;
+}
+
+.brand-subtext {
+  color: #8C8C8C;
+  font-size: 13px;
+  margin: 0;
+}
+
+.auth-title {
+  text-align: center;
+  font-size: 20px;
+  color: #333333;
+  margin-bottom: 24px;
+  font-weight: bold;
+}
+
+/* --- フォームと入力欄 --- */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.modern-input {
+  width: 100%;
+  padding: 14px 16px;
+  background-color: #F9FAFB; /* 真っ白ではなく少しグレーにして今っぽく */
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #333;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.modern-input:focus {
+  outline: none;
+  border-color: #F25C3B;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(242, 92, 59, 0.1);
+}
+
+/* --- オプション（ログイン維持とパスワード忘れ） --- */
+.form-options {
+  display: flex;
+  justify-content: space-between; /* 左右に振り分ける */
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+
+.remember-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  cursor: pointer;
+}
+
+.forgot-link {
+  color: #8C8C8C;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  color: #F25C3B;
+}
+
+/* --- ボタン --- */
+.modern-btn {
+  width: 100%;
+  padding: 16px;
+  background-color: #F25C3B;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.modern-btn:hover {
+  background-color: #E04827;
+  transform: translateY(-2px); /* マウスを乗せると少しフワッと浮く */
+}
+
+/* --- フッター（新規登録） --- */
+.auth-footer {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 14px;
+  border-top: 1px solid #F3F4F6;
+  padding-top: 24px;
+}
+
+.text-gray {
+  color: #8C8C8C;
+}
+
+.register-link {
+  color: #F25C3B;
+  font-weight: bold;
+  text-decoration: none;
+  margin-left: 8px;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
 /* ---------- ERBに足す class の目安（2026-11-13 実際のテンプレートで確認済み） ----------
    一覧 (saving_goals/index)：変数は @goals、状態は goal.display_status で、
      完成形は design-step1-2-apply.md の「3. index.html.erb 完成形」をそのまま貼ればよい。

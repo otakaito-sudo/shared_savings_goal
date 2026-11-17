@@ -1,18 +1,46 @@
-<h1>プロフィール編集</h1>
+<div class="profile-page">
+  <header class="profile-page__header">
+    <h1>プロフィール編集</h1>
+    <p>アカウント情報を確認・変更できます。</p>
+  </header>
 
-<%= form_with model: @user do |f| %>
-    <% if @user.errors.any? %>
-        <ul class="flash-alert">
-            <% @user.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-            <% end %>
+  <section class="profile-card" aria-labelledby="profile-heading">
+    <h2 id="profile-heading">プロフィール</h2>
+    <p class="profile-card__description">
+      アプリ内で表示される名前を変更できます。
+    </p>
+
+    <%= form_with model: @user do |f| %>
+      <% if @user.errors.any? %>
+        <ul class="flash-alert" role="alert">
+          <% @user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
         </ul>
-    <% end %>
+      <% end %>
 
-    <div>
+      <div class="profile-field">
         <%= f.label :name, "名前" %>
-        <%= f.text_field :name %>
+        <%= f.text_field :name, autocomplete: "name" %>
+      </div>
+
+      <%= f.submit "変更を保存", class: "profile-button profile-button--primary" %>
+    <% end %>
+  </section>
+
+  <section class="profile-card" aria-labelledby="password-heading">
+    <h2 id="password-heading">パスワード</h2>
+    <p class="profile-card__description">
+      登録済みのメールアドレスに、再設定用のリンクを送ります。
+    </p>
+
+    <div class="profile-email">
+      <span class="profile-email__label">送信先</span>
+      <span class="profile-email__value"><%= @user.email %></span>
     </div>
 
-    <%= f.submit "更新する", class: "btn btn--primary" %>
-<% end %>
+    <%= button_to "再設定メールを送る", password_resets_path,
+                  method: :post,
+                  class: "profile-button profile-button--secondary" %>
+  </section>
+</div>
