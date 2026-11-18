@@ -633,7 +633,7 @@ input:focus, textarea:focus {
 .login-page-container {
   /* CSSファイルから画像を読み込む場合は /assets/ から指定します */
   background-color: #FFF9EE;
-  background-image: url('/assets/login-bg.png');
+  background-image: url('<%= asset_path("login-bg.png") %>');
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
@@ -791,3 +791,339 @@ input:focus, textarea:focus {
    進捗％の計算式がまだ無い場合は、(現在額 ÷ 目標額 × 100) を
    モデルかヘルパーに足すところから始める（発表で語れるポイントになる）。
    ----------------------------------------------------------------------- */
+/* 「メンバーを招待する」フォームのボタンを横幅いっぱいに広げる */
+.invite-card form .btn--primary {
+  width: 100%;
+  margin-top: 8px; /* 上の役割選択カードとの余白を少し取る */
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   PC画面での「入金申請一覧」と「活動履歴」のレイアウト調整
+   ============================================================ */
+@media (min-width: 900px) {
+  /* 入金申請一覧のカードを2列のグリッドにする */
+  .deposits-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 均等に2列 */
+    gap: 16px; /* カード同士の隙間 */
+  }
+  
+  /* グリッドレイアウトにするため、元々の縦マージンを消す */
+  .deposits-grid .deposit-card {
+    margin-bottom: 0;
+    height: 100%; /* 高さを揃える */
+  }
+
+  /* 活動履歴が横に広がりすぎるのを防ぎ、中央に配置する */
+  .activity-card {
+    max-width: 720px; /* タイムラインが見やすい適度な幅に制限 */
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ボタンを幅広にして押しやすくする */
+#deposit-form .btn--primary {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.1rem;
+  text-align: center;
+  border-radius: 10px;
+}
+
+/* ページネーションと一覧の間の被りを解消 */
+.deposits-grid {
+  margin-bottom: 24px;
+}
+
+.pagy {
+  margin-top: 48px;
+  position: relative;
+  z-index: 10; /* カードの影などに隠れないように手前に出す */
+}
+
+/* ============================================================
+   貯まり具合を折れ線グラフ（線と点）風にする
+   ============================================================ */
+.chart-card {
+  margin-bottom: 24px; /* 参加メンバーとの間の余白（詰まっている問題の解消） */
+}
+
+/* グラフエリア全体を相対配置にして線を引くキャンバスにする */
+.bars {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between; /* 点を等間隔に配置 */
+  height: 140px;
+  margin-top: 16px;
+  padding-bottom: 24px; /* 日付ラベル用の余白 */
+}
+
+/* 棒グラフの柱を「点（ドット）」に変更 */
+.bars__col {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  z-index: 2; /* 線より手前に表示 */
+}
+
+.bars__bar {
+  /* 棒ではなく丸い点にする */
+  width: 12px;
+  height: 12px !important; /* インラインスタイルの高さを上書き */
+  min-height: 12px;
+  background: #EA580C;
+  border-radius: 50%;
+  border: 2px solid #fff; /* 点を白枠で囲んで見やすく */
+  box-shadow: 0 2px 4px rgba(234, 88, 12, 0.3);
+  /* 点の縦位置はERB側のインラインスタイル (bottom: XX%) で制御する */
+  position: absolute; 
+}
+
+.bars__label {
+  position: absolute;
+  bottom: -24px;
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  white-space: nowrap;
+}
+
+/* 点と点を結ぶ背景の線（擬似要素で作る簡易的な線） */
+.bars::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 24px; /* ラベルの上のベースライン */
+  height: 1px;
+  background: #E5E7EB; /* 薄いグレーの基準線 */
+  z-index: 1;
+}
+
+/* ============================================================
+   グラフに縦軸（Y軸）と目標金額の線を追加
+   ============================================================ */
+/* グラフ全体を横並びに */
+.chart-wrapper {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* 縦軸（Y軸）のエリア */
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 24px; /* 下の日付ラベルの分だけ浮かせる */
+  color: #9CA3AF;
+  font-size: 0.75rem;
+  text-align: right;
+  min-width: 48px; /* 金額の桁数が増えてもレイアウトが崩れないように */
+}
+
+/* 目標金額のテキスト */
+.y-axis__max {
+  color: #EA580C;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-50%); /* 線の高さと文字の中央をピタッと合わせる */
+}
+
+/* 0円のテキスト */
+.y-axis__min {
+  line-height: 1;
+  transform: translateY(50%);
+}
+
+/* グラフ本体エリア（元の設定を上書き） */
+.bars {
+  flex: 1; /* 余った幅をすべてグラフにする */
+  border-left: 1px solid #E5E7EB; /* 左側に縦軸の線を引く */
+  margin-top: 0;
+}
+
+/* 目標金額の線（100%の位置に引く点線） */
+.target-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  border-top: 1px dashed #FB923C; /* オレンジの点線 */
+  z-index: 0;
+}
+
+/* ドットが線の中心にくるように微調整 */
+.bars__bar {
+  margin-bottom: -8px; /* ドットの高さ(12px)の半分だけ下にずらして中心を合わせる */
+}
+
+/* ============================================================
+   点と点を結ぶ折れ線（SVG）のスタイル
+   ============================================================ */
+.chart-line-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 24px); /* 下の日付ラベル(24px)の分を引いた高さ */
+  z-index: 1; /* 補助線(0)より手前、ドット(2)より奥に配置 */
+  pointer-events: none; /* マウスイベントの邪魔をしない */
+}
+
+.chart-line-svg polyline {
+  fill: none;
+  stroke: #FB923C; /* ドットと同じオレンジ色 */
+  stroke-width: 2px;
+  stroke-linejoin: round; /* 線が折れ曲がる角を少し丸くする */
+  
+  /* SVGが横長に引き伸ばされても、線の太さを均一（2px）に保つプロパティ */
+  vector-effect: non-scaling-stroke; 
+}
+
+/* 前回の修正で変更した幅の挙動を均等割りに戻す（線とドットの位置を完璧に合わせるため） */
+.bars__col {
+  flex: 1 !important; 
+}
+
+/* ============================================================
+   グラフのドットにホバーした時のツールチップ（吹き出し）
+   ============================================================ */
+
+/* ドットにカーソルを合わせられることを示す */
+.bars__bar {
+  cursor: pointer;
+}
+
+/* 吹き出しの本体（最初は透明にしておく） */
+.bars__bar::after {
+  content: attr(data-tooltip); /* HTMLの data-tooltip の文字を読み込む */
+  position: absolute;
+  bottom: calc(100% + 8px); /* ドットの少し上に浮かせる */
+  left: 50%;
+  transform: translateX(-50%) translateY(4px); /* 中央寄せ ＋ 少し下に待機 */
+  background: #1F2937; /* 濃いグレー */
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap; /* 改行させない */
+  pointer-events: none; /* マウスの邪魔をしない */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+/* 吹き出しの下の小さな三角形（しっぽ） */
+.bars__bar::before {
+  content: "";
+  position: absolute;
+  bottom: 100%; /* ドットの真上 */
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  border: 5px solid transparent;
+  border-top-color: #1F2937; /* 本体と同じ色 */
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+/* ホバーした時にフワッと表示する（透明度を1にして、定位置にスライド） */
+.bars__bar:hover::after,
+.bars__bar:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================================
+   タブ切り替えUI (JavaScript不要)
+   ============================================================ */
+.app-tabs {
+  margin-top: 16px;
+}
+
+/* 裏で動くラジオボタンは隠す */
+.app-tabs__radio {
+  display: none;
+}
+
+/* タブメニュー全体の枠 */
+.app-tabs__nav {
+  display: flex;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #E5E7EB;
+}
+
+/* 個別のタブボタン */
+.app-tabs__label {
+  flex: 1;
+  text-align: center;
+  padding: 12px 16px;
+  font-weight: 700;
+  color: #6B7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px; /* 下のボーダーと重ねる */
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+  border-radius: 8px 8px 0 0;
+}
+
+.app-tabs__label:hover {
+  background: #F9FAFB;
+  color: #374151;
+}
+
+/* パネル（最初は非表示） */
+.app-tabs__panel {
+  display: none;
+  animation: fadeIn 0.3s ease; /* フワッと表示させる */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- ここが魔法の切り替え処理 --- */
+/* 「入金・ホーム」がチェックされたら、そのラベルをオレンジにしてパネルを表示 */
+#tab-home:checked ~ .app-tabs__nav [for="tab-home"] {
+  color: #EA580C;
+  border-bottom-color: #EA580C;
+}
+#tab-home:checked ~ .app-tabs__panels #panel-home {
+  display: block;
+}
+
+/* 「メンバー・履歴」がチェックされたら、そのラベルをオレンジにしてパネルを表示 */
+#tab-members:checked ~ .app-tabs__nav [for="tab-members"] {
+  color: #EA580C;
+  border-bottom-color: #EA580C;
+}
+#tab-members:checked ~ .app-tabs__panels #panel-members {
+  display: block;
+}
+
+/* ============================================================
+   メンバー・履歴タブのレイアウト調整（中央寄せ）
+   ============================================================ */
+#panel-members .detail-grid {
+  display: block; /* 2列のグリッド設定を解除 */
+}
+
+#panel-members .detail-col {
+  max-width: 720px; /* 横に広がりすぎないよう適度な幅に制限 */
+  margin: 0 auto;   /* 左右の余白を均等にして画面の中央に配置 */
+}
