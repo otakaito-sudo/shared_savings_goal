@@ -1,26 +1,66 @@
 <% content_for :container_class, "container--wide" %>
 <% badge = { "recruiting" => "open", "achieved" => "achieved",
              "canceled" => "closed", "expired" => "closed" }[@goal.display_status.to_s] %>
-<div class="goal-hero">
-  <h1>
-    <%= @goal.name %>
-    <span class="badge badge--<%= badge %>"><%= t("goals.status.#{@goal.display_status}", locale: :ja) %></span>
-  </h1>
-  <p><%= @goal.purpose %></p>
 
+<div class="goal-hero">
+  <!-- 1段目：左にタイトル・目的、右上に「目標金額を編集」ボタンを配置 -->
+  <div class="goal-hero__header">
+    <div>
+      <h1>
+        <%= @goal.name %>
+        <span class="badge badge--<%= badge %>"><%= t("goals.status.#{@goal.display_status}", locale: :ja) %></span>
+      </h1>
+      <% if @goal.purpose.present? %>
+        <p class="goal-hero__purpose"><%= @goal.purpose %></p>
+      <% end %>
+    </div>
+    <% if @membership&.manager? && @goal.recruiting? %>
+      <%= link_to "目標金額を編集", edit_saving_goal_target_amounts_path(@goal), class: "btn btn--muted goal-hero__edit-btn" %>
+    <% end %>
+  </div>
+
+  <!-- 2段目：主役の「現在金額」と「達成率（93%）」、右側に目標・期限のサブ情報 -->
+  <div class="goal-hero__stats">
+    <div class="goal-hero__main-num">
+      <span class="goal-hero__amount"><%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %></span>
+      <span class="goal-hero__percent"><%= @goal.progress_percent %>%</span>
+    </div>
+    <p class="goal-hero__remaining">
+      目標 <%= number_to_currency(@goal.target_amount, unit: "円", precision: 0) %>
+      （残り <%= number_to_currency(@goal.remaining_amount, unit: "円", precision: 0) %>）
+      ・ 期限 <%= @goal.deadline %>
+      <% if @goal.days_remaining.negative? %>
+        <span class="deadline-soon">（期限切れ）</span>
+      <% elsif @goal.days_remaining <= 7 %>
+        <span class="deadline-soon">（あと <%= @goal.days_remaining %> 日）</span>
+      <% else %>
+        （あと <%= @goal.days_remaining %> 日）
+      <% end %>
+    </p>
+  </div>
+
+  <% if @goal.achieved? %>
+    <div class="achieved-banner">
+      <%= image_tag "celebration.png", class: "achieved-banner__img", alt: "" %>
+      <p>目標達成！みんなで貯めきりました！</p>
+    </div>
+  <% end %>
+
+  <!-- 3段目：進捗バーとメンバー別内訳 -->
   <% colors = ["#EA580C", "#F59E0B", "#0E9F6E", "#3B82F6", "#EC4899", "#8B5CF6"] %>
   <div class="share-bar share-bar--hero">
     <% if @goal.target_amount.positive? %>
       <% @goal.memberships.includes(:user).each_with_index do |m, i| %>
         <% total = @member_totals[m.user_id] || 0 %>
         <% next if total.zero? %>
+        <% seg_color = colors[i % colors.size] %>
         <div class="share-bar__seg"
-             style="width: <%= [(total * 100.0 / @goal.target_amount).round(1), 100].min %>%; background: <%= colors[i % colors.size] %>"
-             title="<%= m.user.name %> <%= number_to_currency(total, unit: "円", precision: 0) %>"></div>
+             style="width: <%= [(total * 100.0 / @goal.target_amount).round(1), 100].min %>%; background: <%= seg_color %>; --seg-color: <%= seg_color %>;"
+             data-tooltip="<%= m.user.name %>：<%= number_to_currency(total, unit: "円", precision: 0) %>"></div>
       <% end %>
     <% end %>
   </div>
-  <p class="progress__label"><%= @goal.progress_percent %>%</p>
+
   <ul class="share-legend">
     <% @goal.memberships.includes(:user).each_with_index do |m, i| %>
       <% total = @member_totals[m.user_id] || 0 %>
@@ -28,31 +68,6 @@
       <li><span class="share-legend__dot" style="background: <%= colors[i % colors.size] %>"></span><%= m.user.name %> <%= number_to_currency(total, unit: "円", precision: 0) %></li>
     <% end %>
   </ul>
-
-  <p class="goal-hero__amount">
-    <%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %>
-    <% if @goal.achieved? %>
-      <div class="achieved-banner">
-        <%= image_tag "celebration.png", class: "achieved-banner__img", alt: "" %>
-        <p>目標達成！みんなで貯めきりました！</p>
-      </div>
-    <% end %>
-  </p>
-  <p class="goal-hero__remaining">
-    目標 <%= number_to_currency(@goal.target_amount, unit: "円", precision: 0) %>
-    （残り <%= number_to_currency(@goal.remaining_amount, unit: "円", precision: 0) %>）
-    ・ 期限 <%= @goal.deadline %>
-    <% if @goal.days_remaining.negative? %>
-      <span class="deadline-soon">（期限切れ）</span>
-    <% elsif @goal.days_remaining <= 7 %>
-      <span class="deadline-soon">（あと <%= @goal.days_remaining %> 日）</span>
-    <% else %>
-      （あと <%= @goal.days_remaining %> 日）
-    <% end %>
-  </p>
-  <% if @membership&.manager? && @goal.recruiting? %>
-    <%= link_to "目標金額を編集", edit_saving_goal_target_amounts_path(@goal), class: "btn btn--muted" %>
-  <% end %>
 </div>
 
 <% if @my_remanded_deposits.any? || @pending_deposit_count.positive? %>
@@ -81,7 +96,7 @@
   
   <!-- タブのメニューボタン -->
   <div class="app-tabs__nav">
-    <label for="tab-home" class="app-tabs__label">入金・ホーム</label>
+    <label for="tab-home" class="app-tabs__label">入金</label>
     <label for="tab-members" class="app-tabs__label">メンバー・履歴</label>
   </div>
 
@@ -230,11 +245,11 @@
                           ／ 個人目標 <%= number_to_currency(m.target_amount, unit: "円", precision: 0) %>
                         </span>
 
-                        <% if m.target_amount.positive? && (@member_totals[m.user_id] || 0) >= m.target_amount %>
-                          <span title="個人目標達成">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E9E5A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px;"><path d="M4.5 12.5l5 5L19.5 7"/></svg>
-                          </span>
-                        <% end %>
+                      <% if m.target_amount.positive? && (@member_totals[m.user_id] || 0) >= m.target_amount %>
+                        <span class="achieved-badge-icon" data-tooltip="個人目標達成！">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E9E5A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px;"><path d="M4.5 12.5l5 5L19.5 7"/></svg>
+                        </span>
+                      <% end %>
 
                       <% if @membership&.manager? && m.user != current_user %>
                           <%= button_to "外す", saving_goal_membership_path(@goal, m),
@@ -243,11 +258,11 @@
                   </li>
               <% end %>
           </ul>
-
+        </section>
 
           <% if @membership&.manager? %>
-            <section class="invite-card">
-              <h3>メンバーを招待する</h3>
+            <section class="detail-col">
+              <h2>メンバーを招待する</h2>
               <% if @goal.open? %>
                 <%= form_with url: saving_goal_invitations_path(@goal) do |f| %>
                   <%= f.email_field :email, placeholder: "招待する人のメールアドレス", required: true %>
@@ -274,7 +289,7 @@
                 <p class="progress__label">募集を終了した目標には招待できません</p>
               <% end %>
               <% if @pending_invitations.present? %>
-                  <h3>承諾待ちの招待</h3>
+                <h3 style="margin-top: 32px; padding-top: 24px; border-top: 1px dashed #E5E7EB;">承諾待ちの招待</h3>
                   <ul>
                       <% @pending_invitations.each do |inv| %>
                           <li class="member-row">
@@ -287,7 +302,6 @@
               <% end %>
             </section>
           <% end %>
-        </section>
       </div>
 
       <section class="activity-card">

@@ -1,37 +1,120 @@
 <% content_for :container_class, "container--wide" %>
-<h1>使い方</h1>
-<p>共同貯金は、グループで1つの目標に向けてお金を貯めるアプリです。流れは3ステップだけです。</p>
 
-<div class="steps">
-  <div class="step-card">
-    <span class="step-num">1</span>
-    <h3>目標を作る</h3>
-    <p>「新規作成」から、目標名・金額・期限を決めます。作った人が最初のリーダーになります。</p>
-  </div>
-  <div class="step-card">
-    <span class="step-num">2</span>
-    <h3>メンバーを招待する</h3>
-    <p>目標の画面からメールアドレスで招待します。相手がメール内のリンクから参加すると、メンバーに追加されます。</p>
-  </div>
-  <div class="step-card">
-    <span class="step-num">3</span>
-    <h3>入金を申請して、確認してもらう</h3>
-    <p>入金したら金額を「申請」します。リーダーが「確認」すると、貯金額と進捗バーに反映されます。申請しただけでは増えないのがポイントです。</p>
+<div class="guide-modern">
+  <!-- 1. ヒーローエリア：アプリのコンセプトとCTAを最上部に配置 -->
+  <section class="guide-hero">
+    <span class="guide-hero__eyebrow">HOW TO USE</span>
+    <h1 class="guide-hero__title">みんなで貯めれば、目標はもっと楽しくなる</h1>
+    <p class="guide-hero__desc">
+      共同貯金は、家族やパートナー、友人と1つの目標に向かってお金を積み立てるアプリです。<br class="pc-only">
+      複雑な設定は一切不要。たった3つのステップですぐに始められます。
+    </p>
+    <div class="guide-hero__actions">
+      <%= link_to "さっそく目標を作る →", new_saving_goal_path, class: "btn btn--primary guide-hero__btn" %>
+    </div>
+  </section>
+
+  <!-- 2. 3ステップの流れ（番号＋アイコン＋接続ライン） -->
+  <section class="guide-section">
+    <h2 class="guide-section__title">使い方はかんたん 3ステップ</h2>
+    <div class="modern-steps">
+      <div class="modern-step">
+        <div class="modern-step__head">
+          <span class="modern-step__num">STEP 01</span>
+          <div class="modern-step__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+        </div>
+        <h3>目標を作る</h3>
+        <p>「新規作成」から目標名・金額・期限を決めます。作成した人が最初の「リーダー」になります。</p>
+      </div>
+
+      <div class="modern-step">
+        <div class="modern-step__head">
+          <span class="modern-step__num">STEP 02</span>
+          <div class="modern-step__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          </div>
+        </div>
+        <h3>メンバーを招待する</h3>
+        <p>目標画面からメールアドレスで招待を送ります。相手がリンクから参加するとメンバーに加わります。</p>
+      </div>
+
+      <div class="modern-step">
+        <div class="modern-step__head">
+          <span class="modern-step__num">STEP 03</span>
+          <div class="modern-step__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <h3>申請して、確認してもらう</h3>
+        <p>貯金したら金額を「申請」。リーダーが「確認」すると、全体の貯金額と進捗バーに反映されます。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 役割とステータス（視認性の高い2ブロック構成） -->
+  <div class="guide-bottom-grid">
+    <!-- 役割の比較 -->
+    <section class="guide-panel">
+      <h2 class="guide-panel__title">2つの役割</h2>
+      <p class="guide-panel__sub">メンバーごとに権限を分けて安全に管理できます。</p>
+      <div class="role-compare">
+        <div class="role-compare__item role-compare__item--leader">
+          <div class="role-compare__header">
+            <span class="badge badge--open">リーダー</span>
+            <span class="role-compare__tag">管理者</span>
+          </div>
+          <p>入金の確認・却下・差し戻し、およびメンバーの招待や除外など、目標全体の管理ができます。</p>
+        </div>
+
+        <div class="role-compare__item">
+          <div class="role-compare__header">
+            <span class="badge badge--pending">メンバー</span>
+            <span class="role-compare__tag">参加者</span>
+          </div>
+          <p>自分が貯めた金額の入金申請や、進捗・履歴の確認ができます。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 入金ステータスの流れ -->
+    <section class="guide-panel">
+      <h2 class="guide-panel__title">入金申請のステータス</h2>
+      <p class="guide-panel__sub">申請した入金は、確認されるまで以下の状態で管理されます。</p>
+      <div class="status-flow">
+        <div class="status-flow__item">
+          <span class="badge badge--pending">確認待ち</span>
+          <div class="status-flow__text">
+            <strong>申請した直後の状態</strong>
+            <span>リーダーの確認待ちです。まだ全体の貯金額には加算されません。</span>
+          </div>
+        </div>
+
+        <div class="status-flow__item">
+          <span class="badge badge--approved">確認済み</span>
+          <div class="status-flow__text">
+            <strong>貯金額に反映完了</strong>
+            <span>リーダーが承認しました。進捗バーと合計金額に反映されます。</span>
+          </div>
+        </div>
+
+        <div class="status-flow__item">
+          <span class="badge badge--returned">差し戻し</span>
+          <div class="status-flow__text">
+            <strong>金額の修正が必要</strong>
+            <span>理由つきで戻された状態です。金額を直して再申請できます。</span>
+          </div>
+        </div>
+
+        <div class="status-flow__item">
+          <span class="badge badge--rejected">却下</span>
+          <div class="status-flow__text">
+            <strong>取り消し・無効</strong>
+            <span>この申請は終了です。必要な場合は新しく申請し直してください。</span>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
-
-<h2>役割について</h2>
-<ul>
-  <li><span class="badge badge--open">リーダー</span> 入金の確認・却下・差し戻し、メンバーの招待・除外ができます</li>
-  <li><span class="badge badge--pending">メンバー</span> 入金の申請ができます</li>
-</ul>
-
-<h2>入金の状態</h2>
-<ul>
-  <li><span class="badge badge--pending">確認待ち</span> 申請した直後。まだ貯金額には入りません</li>
-  <li><span class="badge badge--approved">確認済み</span> リーダーが確認し、貯金額に反映されました</li>
-  <li><span class="badge badge--returned">差し戻し</span> 理由つきで戻されました。金額を直して再申請できます</li>
-  <li><span class="badge badge--rejected">却下</span> この申請は終了です。必要なら新しく申請し直してください</li>
-</ul>
-
-<p><%= link_to "さっそく目標を作る", new_saving_goal_path, class: "btn btn--primary" %></p>

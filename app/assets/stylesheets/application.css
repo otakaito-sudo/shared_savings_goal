@@ -1116,14 +1116,1758 @@ input:focus, textarea:focus {
   display: block;
 }
 
+
+
 /* ============================================================
-   メンバー・履歴タブのレイアウト調整（中央寄せ）
+   メンバー管理カード内の余白調整（ぎゅうぎゅう感の解消）
    ============================================================ */
-#panel-members .detail-grid {
-  display: block; /* 2列のグリッド設定を解除 */
+/* 「参加メンバー」一覧と「メンバーを招待する」の間を大きく空けて区切り線を引く */
+.invite-card {
+  margin-top: 32px;
+  padding-top: 24px;
 }
 
-#panel-members .detail-col {
-  max-width: 720px; /* 横に広がりすぎないよう適度な幅に制限 */
-  margin: 0 auto;   /* 左右の余白を均等にして画面の中央に配置 */
+/* 見出し（メンバーを招待する・承諾待ちの招待）の下の余白を持たせる */
+.invite-card h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* 「招待メールを送る」ボタンと「承諾待ちの招待」の間をさらにしっかり空ける */
+.invite-card h3:nth-of-type(2) {
+  margin-top: 40px;
+}
+
+
+/* PC画面での左右のカードの幅の割合を変更 */
+@media (min-width: 900px) {
+  .detail-grid {
+    /* 1fr 1fr で、左右を 1:1 の同じ幅にする */
+    grid-template-columns: 1fr 1fr; 
+  }
+}
+
+/* ============================================================
+   入金申請一覧と活動履歴のレイアウト調整
+   ============================================================ */
+/* 全画面共通：入金申請一覧をグリッドにし、カード間に隙間を空ける */
+.deposits-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* スマホでは縦1列 */
+  gap: 16px; /* カード同士の縦横の隙間 */
+  margin-bottom: 24px;
+}
+
+.deposits-grid .deposit-card {
+  margin-bottom: 0; /* 元々の下マージンを消す */
+  height: 100%; /* 高さを揃える */
+}
+
+/* PC画面（900px以上）での調整 */
+@media (min-width: 900px) {
+  .deposits-grid {
+    grid-template-columns: repeat(2, 1fr); /* PCでは2列に並べる */
+  }
+
+  /* 活動履歴が横に広がりすぎるのを防ぐ */
+  .activity-card {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ============================================================
+   縦がくっつく問題の確実な修正
+   ============================================================ */
+.deposits-grid .deposit-card {
+  height: auto !important; /* 隙間を潰す原因だった height: 100% を解除 */
+}
+
+/* ============================================================
+   個人目標達成チェックマークのツールチップ（吹き出し）
+   ============================================================ */
+.achieved-badge-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 2px; /* カーソルを合わせやすくする余白 */
+}
+
+/* 吹き出し本体 */
+.achieved-badge-icon::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #065F46; /* 達成感の出る濃い緑色 */
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(6, 95, 70, 0.2);
+  z-index: 10;
+}
+
+/* 吹き出しの三角形（しっぽ） */
+.achieved-badge-icon::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  border: 5px solid transparent;
+  border-top-color: #065F46;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+/* ホバー時の表示 */
+.achieved-badge-icon:hover::after,
+.achieved-badge-icon:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================================
+   進捗バー（share-bar）のツールチップと反応範囲の改善
+   ============================================================ */
+/* 吹き出しがバーの外に飛び出せるように overflow を変更 */
+.share-bar--hero {
+  overflow: visible !important;
+  position: relative;
+}
+
+/* バーの両端だけ丸くする（overflow: visible にしたため個別に指定） */
+.share-bar--hero .share-bar__seg:first-child {
+  border-top-left-radius: 999px;
+  border-bottom-left-radius: 999px;
+}
+.share-bar--hero .share-bar__seg:last-child {
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+}
+
+/* 各メンバーのバー部分 */
+.share-bar__seg {
+  position: relative;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+/* ★ポイント：上下に透明な判定エリアを広げて、バーの端や少し上下でも即反応するようにする */
+.share-bar__seg::marker,
+.share-bar__seg .hit-area { display: none; }
+.share-bar__seg {
+  background-clip: content-box;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-top: -8px;
+  margin-bottom: -8px;
+  height: 32px; /* 見た目の16px + 上下8pxずつの当たり判定 */
+  box-sizing: border-box;
+}
+
+/* ホバー時に該当メンバーのバーを少し明るく強調 */
+.share-bar__seg:hover {
+  filter: brightness(1.08);
+  z-index: 5;
+}
+
+/* 吹き出し本体（メンバーカラーと連動したモダンなデザイン） */
+.share-bar__seg::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: var(--seg-color, #EA580C);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+  z-index: 20;
+}
+
+/* 吹き出しのしっぽ（三角形） */
+.share-bar__seg::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% - 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  border: 5px solid transparent;
+  border-top-color: var(--seg-color, #EA580C); /* 三角形もメンバーカラーに */
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 20;
+}
+
+/* ホバーで即座にフワッと表示 */
+.share-bar__seg:hover::after,
+.share-bar__seg:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================================
+   ヘッダーのログインユーザー表示＆ホバーでプロフィール編集表示
+   ============================================================ */
+/* ヘッダーのメニューが下に飛び出せるようにする */
+.app-header .nav-actions {
+  overflow: visible !important;
+}
+
+.user-menu {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.app-header .nav-user {
+  display: inline-flex;
+  align-items: baseline; /* 文字のベースライン（底辺）をピタッと揃える */
+  max-width: none !important;
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  color: #EA580C;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-right: 0 !important; /* 元の span の余白をリセット */
+}
+
+/* 「ログイン中：」と「名前」の間の不自然な余白を消す */
+.app-header .nav-user span {
+  margin-right: 0 !important;
+}
+
+.nav-user__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9A3412;
+}
+
+/* --- カーソルを合わせた時に出る「プロフィール編集」メニュー --- */
+.user-menu__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  padding-top: 8px; /* バッジとメニューの間の透明な橋渡し（カーソルが外れて消えるのを防ぐ） */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 50;
+}
+
+/* ホバーした時にフワッと表示 */
+.user-menu:hover .user-menu__dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-menu__item {
+  display: block;
+  background: #ffffff;
+  color: #374151 !important;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.user-menu__item:hover {
+  background: #FFF7ED;
+  color: #EA580C !important;
+  border-color: #FED7AA;
+}
+
+/* バッジの背景と枠線をなくし、洗練されたテキストリンク風にする */
+.app-header .nav-user {
+  display: inline-flex;
+  align-items: baseline;
+  max-width: none !important;
+  background: transparent !important; /* 背景色を透明に */
+  border: none !important;            /* 枠線を消去 */
+  border-radius: 8px;
+  color: #1F2937;                     /* 落ち着いた濃いグレー */
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-right: 0 !important;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* カーソルを合わせたときだけ、うっすら背景色をつけてクリック感を出す */
+.user-menu:hover .nav-user {
+  background-color: #F3F4F6 !important;
+  color: #EA580C;
+}
+
+.app-header .nav-user span {
+  margin-right: 0 !important;
+}
+
+.nav-user__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6B7280;
+}
+
+/* 下向き矢印（メニューがあることを示す） */
+.nav-user__arrow {
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  margin-left: 4px !important;
+}
+
+/* ============================================================
+   ヘッダーのログインユーザー表示＆ドロップダウン（バランス調整版）
+   ============================================================ */
+.app-header .nav-actions {
+  overflow: visible !important;
+}
+
+.user-menu {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.app-header .nav-user {
+  display: inline-flex;
+  align-items: center; /* 文字と矢印の縦の中心をピタッと揃える */
+  gap: 2px;
+  max-width: none !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px;
+  color: #374151;
+  padding: 6px 10px;
+  font-size: 0.875rem; /* 14pxで統一 */
+  line-height: 1.4;
+  margin-right: 0 !important;
+  transition: background-color 0.15s ease;
+}
+
+.user-menu:hover .nav-user {
+  background-color: #F3F4F6 !important;
+}
+
+.app-header .nav-user span {
+  margin-right: 0 !important;
+}
+
+/* 「ログイン中：」と「名前」の統一感を出す */
+.nav-user__label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6B7280;
+}
+
+.nav-user__name {
+  font-weight: 700;
+  color: #1F2937; /* オレンジではなく濃いグレーにして落ち着かせる */
+}
+
+/* 矢印アイコン（ホバー時に少し下に動くアニメーション付き） */
+.nav-user__arrow {
+  color: #6B7280;
+  margin-left: 4px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.user-menu:hover .nav-user__arrow {
+  color: #EA580C;
+  transform: translateY(1px);
+}
+
+/* --- ドロップダウンメニュー（コンパクトで洗練されたサイズに） --- */
+.user-menu__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  padding-top: 6px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 50;
+}
+
+.user-menu:hover .user-menu__dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-menu__item {
+  display: block;
+  background: #ffffff;
+  color: #374151 !important;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 8px 14px; /* 余白をスリムに調整 */
+  font-size: 0.825rem; /* 文字も少し控えめにしてバランスを取る */
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.user-menu__item:hover {
+  background: #FFF7ED;
+  color: #EA580C !important;
+  border-color: #FED7AA;
+}
+
+/* ============================================================
+   ヘッダーのログインユーザー表示（サイズアップ＆高さ完全一致版）
+   ============================================================ */
+.app-header .nav-user {
+  display: inline-flex;
+  align-items: center;
+  max-width: none !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1rem; /* 14px → 16px にサイズアップ */
+  line-height: 1;
+  margin-right: 0 !important;
+  transition: background-color 0.15s ease;
+}
+
+.user-menu:hover .nav-user {
+  background-color: #F3F4F6 !important;
+}
+
+.app-header .nav-user span {
+  margin-right: 0 !important;
+}
+
+/* 「ログイン中：」と「名前」のサイズ・行の高さを完全に揃える */
+.nav-user__label {
+  font-size: 0.95rem; /* 名前とほぼ同じ大きさに揃えて高さズレを解消 */
+  font-weight: 500;
+  color: #6B7280;
+}
+
+.nav-user__name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+/* 矢印アイコンも文字に合わせて少し大きくし、高さを微調整 */
+.nav-user__arrow {
+  width: 16px;
+  height: 16px;
+  color: #6B7280;
+  margin-left: 6px;
+  transform: translateY(1px); /* 視覚的な中心にピタッと合わせる */
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.user-menu:hover .nav-user__arrow {
+  color: #EA580C;
+  transform: translateY(2px);
+}
+
+/* ドロップダウンも全体のサイズ感に合わせて少しだけ調整 */
+.user-menu__item {
+  display: block;
+  background: #ffffff;
+  color: #374151 !important;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+/* 色付きバーと背景グレーの太さを完全に同じ16pxに統一 */
+.share-bar--hero {
+  height: 16px !important;
+  border-radius: 999px !important;
+  background: #F3F4F6 !important;
+}
+
+.share-bar--hero .share-bar__seg {
+  height: 16px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background-clip: border-box !important;
+}
+
+/* 当たり判定だけを上下に広げる（見た目には一切影響しない） */
+.share-bar--hero .share-bar__seg {
+  position: relative;
+}
+/* 既存の ::before (しっぽ) と干渉しないよう、バー自体の当たり判定はそのまま16pxで端まで反応 */
+
+
+/* ============================================================
+   進捗バー全体を太くして、色付き部分とグレーの太さを統一
+   ============================================================ */
+.share-bar--hero {
+  height: 24px !important; /* バー全体の太さ（お好みで 20px〜28px に調整可） */
+  border-radius: 999px !important;
+  background: #E5E7EB !important; /* 残りのグレー部分もはっきり見せる */
+  overflow: visible !important;
+  position: relative;
+}
+
+.share-bar--hero .share-bar__seg {
+  height: 24px !important; /* 親とまったく同じ高さにする */
+  padding: 0 !important;
+  margin: 0 !important;
+  background-clip: border-box !important;
+}
+
+/* バーの両端だけ親に合わせて丸くする */
+.share-bar--hero .share-bar__seg:first-child {
+  border-top-left-radius: 999px !important;
+  border-bottom-left-radius: 999px !important;
+}
+.share-bar--hero .share-bar__seg:last-child {
+  border-top-right-radius: 999px !important;
+  border-bottom-right-radius: 999px !important;
+}
+
+/* 吹き出しとしっぽの位置を太くなったバーの上端に合わせる */
+.share-bar--hero .share-bar__seg::after {
+  bottom: calc(100% + 10px) !important;
+}
+.share-bar--hero .share-bar__seg::before {
+  bottom: 100% !important;
+}
+
+/* ============================================================
+   「メンバーを招待する」ボタンのレイアウトとデザイン調整
+   ============================================================ */
+#panel-members .detail-col form .btn--primary {
+  width: 100%;
+  padding: 13px 16px;
+  margin-top: 8px;
+  font-size: 0.95rem;
+  border-radius: 12px; /* 役割選択のカードや入力欄と角丸を揃える */
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.2);
+  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#panel-members .detail-col form .btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+
+/* ============================================================
+   目標ヒーローカード（.goal-hero）のモダンな配置調整
+   ============================================================ */
+.goal-hero {
+  padding: 24px !important;
+}
+
+/* 1段目：タイトルと編集ボタンを左右両端に配置 */
+.goal-hero__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.goal-hero__header h1 {
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goal-hero__purpose {
+  margin: 0;
+  color: #6B7280;
+  font-size: 0.95rem;
+}
+
+.goal-hero__edit-btn {
+  margin-bottom: 0 !important;
+  padding: 8px 14px !important;
+  font-size: 0.85rem !important;
+  flex-shrink: 0;
+}
+
+/* 2段目：金額・％と、目標・期限の横並び */
+.goal-hero__stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+
+.goal-hero__main-num {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.goal-hero__amount {
+  font-size: 2.1rem !important;
+  font-weight: 800 !important;
+  line-height: 1.1;
+  color: #111827;
+}
+
+.goal-hero__percent {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #EA580C;
+  background: #FFF7ED;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.goal-hero__remaining {
+  margin: 0 !important;
+  font-size: 0.9rem;
+}
+
+/* バーと凡例の余白調整 */
+.goal-hero .share-bar--hero {
+  margin-top: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+.goal-hero .share-legend {
+  margin-top: 0 !important;
+}
+
+/* ============================================================
+   使い方（ガイド）ページの読みやすさ改善
+   ============================================================ */
+.guide-header {
+  margin-bottom: 20px;
+}
+
+.guide-header h1 {
+  margin: 0 0 6px;
+}
+
+.guide-header p {
+  margin: 0;
+  color: #4B5563;
+}
+
+/* 3ステップのカード内の行間を広げて読みやすく */
+.steps .step-card {
+  padding: 20px;
+}
+
+.steps .step-card p {
+  line-height: 1.7;
+  font-size: 0.925rem;
+}
+
+/* 下半分の2カラムグリッド */
+.guide-details {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+@media (min-width: 900px) {
+  .guide-details {
+    grid-template-columns: 1fr 1.4fr; /* 項目が多い「入金の状態」を少し広めに */
+    align-items: stretch;
+  }
+}
+
+/* 白いカード化 */
+.guide-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06), 0 4px 14px rgba(16, 24, 40, 0.05);
+}
+
+.guide-card h2 {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  color: #111827;
+}
+
+/* リストの黒丸（・）を消し、バッジと説明文の開始位置をピタッと揃える */
+.guide-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.guide-list li {
+  display: grid;
+  grid-template-columns: 84px 1fr; /* 左列を84pxに固定して説明文の頭を揃える */
+  align-items: baseline;
+  gap: 12px;
+  font-size: 0.925rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.guide-list .badge {
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 下部のアクションボタンエリア */
+.guide-cta {
+  margin-top: 28px;
+  text-align: center;
+}
+
+.guide-cta .btn {
+  padding: 14px 32px;
+  font-size: 1rem;
+}
+
+/* ============================================================
+   使い方ページ（モダンオンボーディング風）
+   ============================================================ */
+.guide-modern {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  padding-bottom: 40px;
+}
+
+/* 1. ヒーローエリア */
+.guide-hero {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFFFF 60%, #FFEDD5 100%);
+  border: 1px solid #FED7AA;
+  border-radius: 24px;
+  padding: 40px 28px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(234, 88, 12, 0.06);
+}
+
+.guide-hero__eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #EA580C;
+  background: #FFEDD5;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.guide-hero__title {
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: #111827;
+  margin: 0 0 12px;
+  line-height: 1.35;
+}
+
+.guide-hero__desc {
+  color: #4B5563;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 620px;
+  margin: 0 auto 24px;
+}
+
+.guide-hero__btn {
+  padding: 14px 32px !important;
+  font-size: 1rem !important;
+  border-radius: 999px !important;
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.25);
+  margin-bottom: 0 !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.guide-hero__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(234, 88, 12, 0.35);
+}
+
+/* 2. 3ステップ */
+.guide-section__title {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 20px;
+}
+
+.modern-steps {
+  display: grid;
+  gap: 20px;
+}
+
+@media (min-width: 900px) {
+  .modern-steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.modern-step {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(16, 24, 40, 0.04);
+  border: 1px solid #F3F4F6;
+  position: relative;
+}
+
+.modern-step__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modern-step__num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #EA580C;
+  background: #FFF7ED;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.modern-step__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #FFF7ED;
+  color: #EA580C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modern-step h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 8px;
+}
+
+.modern-step p {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #4B5563;
+  margin: 0;
+}
+
+/* 3. 下段の役割＆ステータス */
+.guide-bottom-grid {
+  display: grid;
+  gap: 20px;
+}
+
+@media (min-width: 900px) {
+  .guide-bottom-grid {
+    grid-template-columns: 1fr 1.25fr;
+    align-items: start;
+  }
+}
+
+.guide-panel {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(16, 24, 40, 0.04);
+  border: 1px solid #F3F4F6;
+}
+
+.guide-panel__title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 4px;
+}
+
+.guide-panel__sub {
+  font-size: 0.85rem;
+  color: #6B7280;
+  margin: 0 0 20px;
+}
+
+/* 役割の比較カード */
+.role-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.role-compare__item {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.role-compare__item--leader {
+  background: #F8FAFC;
+  border-color: #DBEAFE;
+}
+
+.role-compare__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.role-compare__tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6B7280;
+}
+
+.role-compare__item p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* ステータス一覧 */
+.status-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.status-flow__item {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  align-items: start;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.status-flow__item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.status-flow__item .badge {
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 2px;
+}
+
+.status-flow__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.status-flow__text strong {
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.status-flow__text span {
+  font-size: 0.825rem;
+  color: #6B7280;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .pc-only { display: none; }
+  .guide-hero { padding: 28px 20px; }
+  .guide-hero__title { font-size: 1.35rem; }
+}
+
+/* ============================================================
+   貯金目標の作成フォーム（.goal-form-card）のデザイン刷新
+   ============================================================ */
+.goal-form-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 36px 32px;
+  margin: 16px auto 40px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.03);
+  border: 1px solid #F3F4F6;
+}
+
+.goal-form-card__header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.goal-form-card__header h1 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.goal-form-card__header p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6B7280;
+}
+
+.goal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.goal-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goal-form__group label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.goal-form input[type="text"],
+.goal-form input[type="number"],
+.goal-form input[type="date"] {
+  background-color: #F9FAFB;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.goal-form input:focus {
+  background-color: #ffffff;
+  border-color: #EA580C;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.12);
+}
+
+/* 金額と期限の横並び（スマホでは自動で縦並びに） */
+.goal-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .goal-form__row {
+    grid-template-columns: 1fr;
+  }
+  .goal-form-card {
+    padding: 24px 20px;
+  }
+}
+
+/* 金額欄の右端に「円」を表示 */
+.input-with-unit {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-unit input {
+  padding-right: 36px;
+}
+
+.input-unit {
+  position: absolute;
+  right: 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #6B7280;
+  pointer-events: none;
+}
+
+/* ボタンエリア */
+.goal-form__actions {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.goal-form__submit {
+  width: 100%;
+  padding: 15px !important;
+  font-size: 1rem !important;
+  border-radius: 14px !important;
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.goal-form__submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(234, 88, 12, 0.35);
+}
+
+.goal-form__cancel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6B7280;
+  text-decoration: none;
+  padding: 4px 12px;
+}
+
+.goal-form__cancel:hover {
+  color: #111827;
+  text-decoration: underline;
+}
+
+/* ============================================================
+   貯金目標一覧ページ（saving_goals#index）のモダン化
+   ============================================================ */
+/* 1. ページヘッダー */
+.goals-index-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.goals-index-header h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #111827;
+}
+
+.goals-index-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6B7280;
+}
+
+.goals-index-btn {
+  margin-bottom: 0 !important;
+  padding: 12px 20px !important;
+  border-radius: 999px !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.25);
+  white-space: nowrap;
+}
+
+/* 2. カード一覧のグリッド（2列または3列でバランス良く表示） */
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+/* カード全体（リンク化＆ホバー時の浮き上がり） */
+.modern-goal-card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  text-decoration: none !important;
+  color: inherit;
+  border: 1px solid #F3F4F6;
+  box-shadow: 0 4px 20px rgba(16, 24, 40, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.modern-goal-card:hover {
+  transform: translateY(-4px);
+  border-color: #FED7AA;
+  box-shadow: 0 12px 28px rgba(234, 88, 12, 0.1);
+}
+
+/* カード上段：タイトル＋バッジ */
+.modern-goal-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.modern-goal-card__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modern-goal-card:hover .modern-goal-card__title {
+  color: #EA580C;
+}
+
+/* カード中段：金額と達成率 */
+.modern-goal-card__stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.modern-goal-card__amounts {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.modern-goal-card__current {
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.modern-goal-card__target {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6B7280;
+}
+
+.modern-goal-card__percent {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #EA580C;
+  background: #FFF7ED;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+/* 進捗バー（ブランドカラーのオレンジ基調・達成時は緑） */
+.modern-goal-card__bar {
+  width: 100%;
+  height: 12px;
+  background: #F3F4F6;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.modern-goal-card__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #F97316, #EA580C);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.modern-goal-card__fill--done {
+  background: linear-gradient(90deg, #10B981, #059669);
+}
+
+/* カード下段：残り金額・期限・人数 */
+.modern-goal-card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid #F3F4F6;
+  font-size: 0.825rem;
+  color: #6B7280;
+  white-space: nowrap; /* 単語の途中改行を防止 */
+}
+
+.modern-goal-card__meta strong {
+  color: #374151;
+  font-weight: 700;
+}
+
+.modern-goal-card__meta-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 0件時のエンプティステート */
+.goals-empty-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 40px 28px;
+  text-align: center;
+  border: 1px solid #FED7AA;
+  box-shadow: 0 8px 24px rgba(234, 88, 12, 0.06);
+}
+
+.goals-empty-card h2 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+  color: #111827;
+}
+
+.goals-empty-card p {
+  margin: 0 0 20px;
+  color: #6B7280;
+  font-size: 0.95rem;
+}
+
+.goals-empty-steps {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  background: #FFF7ED;
+  color: #9A3412;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 10px 20px;
+  border-radius: 999px;
+  margin-bottom: 24px;
+}
+
+.goals-empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .goals-index-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .goals-index-btn {
+    width: 100%;
+    text-align: center;
+  }
+  .goals-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   「メンバー・履歴」タブのカード幅を横長に統一
+   ============================================================ */
+/* 1. 活動履歴カードを横幅いっぱいに広げる */
+#panel-members .activity-card {
+  max-width: none !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+}
+
+/* 2. メンバーログイン時など、上の段にカードが1つしかない時は「参加メンバー」も横幅いっぱいにする */
+#panel-members .detail-grid > .detail-col:only-child {
+  grid-column: 1 / -1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   目標金額編集ページ（target_amounts#edit）のデザイン刷新
+   ============================================================ */
+.modern-target-editor {
+  max-width: 680px;
+  margin: 16px auto 48px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 36px 32px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.03);
+  border: 1px solid #F3F4F6;
+}
+
+/* ヘッダー */
+.target-editor__header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.target-editor__eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #EA580C;
+  background: #FFF7ED;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.target-editor__header h1 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.target-editor__desc {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: #6B7280;
+}
+
+.target-editor__desc strong {
+  color: #111827;
+}
+
+/* 全体目標の強調ボックス */
+.target-total-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: #FFF7ED;
+  border: 1.5px solid #FED7AA;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+
+.target-total-box__label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.target-total-box__label label {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #9A3412;
+  margin: 0;
+}
+
+.target-total-box__label span {
+  font-size: 0.8rem;
+  color: #C2410C;
+}
+
+/* 金額入力欄（右寄せ＋「円」単位表示） */
+.target-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 180px;
+  flex-shrink: 0;
+}
+
+.target-input-wrap--large {
+  width: 210px;
+}
+
+.target-input-wrap input {
+  width: 100%;
+  text-align: right;
+  padding: 10px 34px 10px 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  background: #ffffff;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 12px;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.target-input-wrap--large input {
+  font-size: 1.25rem;
+  font-weight: 800;
+  border-color: #FDBA74;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.target-input-wrap input:focus {
+  outline: none;
+  border-color: #EA580C;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+}
+
+.target-input-unit {
+  position: absolute;
+  right: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #6B7280;
+  pointer-events: none;
+}
+
+/* 個人目標リスト */
+.target-members-section {
+  margin-bottom: 24px;
+}
+
+.target-members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.target-members-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.target-members-header span {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #6B7280;
+}
+
+.target-members-list {
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.target-member-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.target-member-row:last-child {
+  border-bottom: none;
+}
+
+.target-member-row:hover {
+  background: #F9FAFB;
+}
+
+.target-member-row__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.target-member-row__name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+/* サマリーと自動反映バー */
+.target-summary-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 28px;
+}
+
+.target-editor__summary {
+  margin: 0 !important;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+.target-apply-btn {
+  background: #ffffff;
+  color: #EA580C;
+  border: 1px solid #FED7AA;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.target-apply-btn:hover {
+  background: #FFF7ED;
+  border-color: #EA580C;
+}
+
+/* 保存・キャンセルアクション */
+.target-editor__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.target-save-btn {
+  width: 100%;
+  padding: 15px !important;
+  font-size: 1rem !important;
+  border-radius: 14px !important;
+  margin: 0 !important;
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.target-save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(234, 88, 12, 0.35);
+}
+
+.target-cancel-link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6B7280;
+  text-decoration: none;
+  padding: 4px 12px;
+}
+
+.target-cancel-link:hover {
+  color: #111827;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .modern-target-editor {
+    padding: 24px 20px;
+  }
+  .target-total-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .target-input-wrap--large {
+    width: 100%;
+  }
+  .target-input-wrap {
+    width: 140px;
+  }
+}
+
+/* 全体目標の入力行（過度な装飾をなくしたシンプルなデザイン） */
+.target-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  margin-bottom: 28px;
+}
+
+.target-total-row__label {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+/* 入力欄の枠線も自然なグレーに統一 */
+.target-input-wrap--large input {
+  font-size: 1.2rem;
+  font-weight: 800;
+  border-color: #D1D5DB;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* ============================================================
+   メンバー招待承諾画面（invitations#show）
+   ============================================================ */
+.invitation-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
+}
+
+.invitation-card {
+  max-width: 460px;
+  width: 100%;
+}
+
+.invitation-message {
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #374151;
+  margin: 0 0 24px;
+}
+
+.invitation-message strong {
+  color: #111827;
+  font-weight: 800;
+}
+
+.invitation-details {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.invitation-details__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.875rem;
+}
+
+.invitation-details__label {
+  color: #6B7280;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.invitation-details__value {
+  color: #111827;
+  font-weight: 700;
+  text-align: right;
+  word-break: break-all;
 }

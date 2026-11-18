@@ -1,16 +1,30 @@
-<h1>メンバー招待</h1>
+<div class="invitation-page-container">
+  <div class="modern-auth-card invitation-card">
+    <h1 class="auth-title" style="margin-bottom: 16px;">メンバー招待</h1>
 
-<p>
-    <%= @invitation.invited_by.name %> さんから
-    「<%= @goal.name %>」への招待が届いています
-</p>
+    <p class="invitation-message">
+      <strong><%= @invitation.invited_by.name %></strong> さんから
+      「<strong><%= @goal.name %></strong>」への招待が届いています。
+    </p>
 
-<p>招待先：<%= @invitation.email %></p>
-<p>有効期限：<%= @invitation.expires_at %></p>
+    <div class="invitation-details">
+      <div class="invitation-details__row">
+        <span class="invitation-details__label">招待先</span>
+        <span class="invitation-details__value"><%= @invitation.email %></span>
+      </div>
+      <div class="invitation-details__row">
+        <span class="invitation-details__label">有効期限</span>
+        <span class="invitation-details__value"><%= @invitation.expires_at.strftime("%Y/%m/%d %H:%M") %></span>
+      </div>
+    </div>
 
-<%= form_with url: accept_invitation_path(@invitation), method: :post do |f| %>
-    <%= hidden_field_tag :token, params[:token] %>
-    <%= f.submit "招待を承諾する", class: "btn btn--primary" %>
-<% end %>
+    <%= form_with url: accept_invitation_path(@invitation), method: :post do |f| %>
+      <%= hidden_field_tag :token, params[:token] %>
+      <%= f.submit "招待を承諾して参加する", class: "modern-btn" %>
+    <% end %>
 
-<%= link_to "戻る", root_path, class: "btn btn--secondary" %>
+    <div class="auth-footer">
+      <%= link_to "← トップへ戻る", root_path, class: "register-link", style: "margin-left: 0;" %>
+    </div>
+  </div>
+</div>

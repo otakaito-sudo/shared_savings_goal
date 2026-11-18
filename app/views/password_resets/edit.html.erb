@@ -1,25 +1,47 @@
-<h1>新しいパスワードを設定</h1>
+<% content_for :head do %>
+  <style>
+    body {
+      background-color: #FFF9EE;
+      background-image: url('<%= asset_path("login-bg.png") %>');
+      background-size: cover;
+      background-position: center bottom;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+  </style>
+<% end %>
 
-<%= form_with model: @user, url: password_reset_path(params[:id]), method: :patch do |f| %>
-    <% if @user.errors.any? %>
-        <ul class="flash-alert">
-            <% @user.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-            <% end %>
+<div class="login-page-container">
+  <div class="modern-auth-card">
+    <h1 class="auth-title" style="margin-bottom: 12px;">新しいパスワードを設定</h1>
+    <p style="text-align: center; font-size: 0.85rem; color: #6B7280; line-height: 1.6; margin: 0 0 24px;">
+      今後ログインに使用する新しいパスワードを入力してください。
+    </p>
+
+    <%= form_with model: @user, url: password_reset_path(params[:id]), method: :patch, class: "auth-form" do |f| %>
+      <% if @user.errors.any? %>
+        <ul class="flash-alert" style="margin-bottom: 20px; font-size: 0.85rem;">
+          <% @user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
         </ul>
+      <% end %>
+
+      <%= hidden_field_tag :email, @user.email %>
+
+      <div class="form-group">
+        <%= f.password_field :password, placeholder: "新しいパスワード", class: "modern-input", required: true %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 24px;">
+        <%= f.password_field :password_confirmation, placeholder: "新しいパスワード（確認）", class: "modern-input", required: true %>
+      </div>
+
+      <%= f.submit "パスワードを変更する", class: "modern-btn" %>
     <% end %>
 
-    <%= hidden_field_tag :email, @user.email %>
-
-    <div>
-        <%= f.label :password, "新しいパスワード" %>
-        <%= f.password_field :password %>
+    <div class="auth-footer">
+      <%= link_to "← ログイン画面に戻る", login_path, class: "register-link", style: "margin-left: 0;" %>
     </div>
-
-    <div>
-        <%= f.label :password_confirmation, "新しいパスワード（確認）" %>
-        <%= f.password_field :password_confirmation %>
-    </div>
-
-    <%= f.submit "パスワードを変更する", class: "btn btn--primary" %>
-<% end %>
+  </div>
+</div>

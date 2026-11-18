@@ -11,37 +11,42 @@
   </style>
 <% end %>
 
-<div class="auth-card">
-    <p class="brand">共同貯金</p>
-    <p class="brand-tagline">みんなで目標に向かって貯めるアプリ</p>
-    <h1>ユーザー登録</h1>
+<div class="login-page-container">
+  <div class="modern-auth-card">
+    <div class="auth-header">
+      <p class="brand-text">共同貯金</p>
+      <p class="brand-subtext">みんなで目標に向かって貯めるアプリ</p>
+    </div>
 
-    <%= form_with model: @user do |f| %>
-        <% if @user.errors.any? %>
-            <ul class="flash-alert">
-                <% @user.errors.full_messages.each do |m| %>
-                    <li><%= m %></li>
-                <% end %>
-            </ul>
-        <% end %>
+    <h1 class="auth-title">新規登録</h1>
 
-        <div>
-            <%= f.label :name, "名前" %>
-            <%= f.text_field :name %>
-        </div>
+    <%= form_with model: @user, class: "auth-form" do |f| %>
+      <% if @user.errors.any? %>
+        <ul class="flash-alert" style="margin-bottom: 20px; font-size: 0.85rem;">
+          <% @user.errors.full_messages.each do |m| %>
+            <li><%= m %></li>
+          <% end %>
+        </ul>
+      <% end %>
 
-        <div>
-            <%= f.label :email, "メールアドレス" %>
-            <%= f.email_field :email %>
-        </div>
+      <div class="form-group">
+        <%= f.text_field :name, placeholder: "お名前（ニックネーム可）", class: "modern-input" %>
+      </div>
 
-        <div>
-            <%= f.label :password, "パスワード" %>
-            <%= f.password_field :password %>
-        </div>
+      <div class="form-group">
+        <%= f.email_field :email, placeholder: "メールアドレス", class: "modern-input" %>
+      </div>
 
-        <%= f.submit "登録", class: "btn btn--primary", style: "margin-top: 24px;" %>
+      <div class="form-group" style="margin-bottom: 24px;">
+        <%= f.password_field :password, placeholder: "パスワード", class: "modern-input" %>
+      </div>
+
+      <%= f.submit "アカウントを作成する", class: "modern-btn" %>
     <% end %>
 
-    <p><%= link_to "ログインはこちら", login_path %></p>
+    <div class="auth-footer">
+      <span class="text-gray">すでにアカウントをお持ちですか？</span>
+      <%= link_to "ログインはこちら", login_path, class: "register-link" %>
+    </div>
+  </div>
 </div>
