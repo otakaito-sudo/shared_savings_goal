@@ -1,0 +1,27 @@
+<h1><%= @goal.name %> の活動履歴</h1>
+
+<section class="activity-card">
+  <% if @activities.any? %>
+    <ul class="timeline">
+      <% @activities.each do |a| %>
+        <li class="timeline__item timeline__item--<%= a.kind %>">
+          <span class="timeline__icon">
+            <%= image_tag "icons/activity-#{a.kind}.png", class: "timeline__img", alt: "" %>
+          </span>
+          <div class="timeline__body">
+            <p class="timeline__text"><%= activity_message(a) %></p>
+            <p class="timeline__time"><%= a.created_at.strftime("%m/%d %H:%M") %></p>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>まだ活動はありません</p>
+  <% end %>
+</section>
+
+<% if @pagy.pages > 1 %>
+  <%== @pagy.series_nav %>
+<% end %>
+
+<%= link_to "← 目標に戻る", saving_goal_path(@goal), class: "activity-more" %>

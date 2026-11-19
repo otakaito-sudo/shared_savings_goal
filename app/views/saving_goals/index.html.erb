@@ -1,0 +1,75 @@
+<% content_for :container_class, "container--wide" %>
+
+<!-- 1. ページヘッダー（タイトルと新規作成ボタンを左右に配置） -->
+<div class="goals-index-header">
+  <div>
+    <h1>貯金目標</h1>
+    <p class="goals-index-sub">参加中のグループ貯金の一覧です</p>
+  </div>
+  <%= link_to "＋ 新しい目標を作る", new_saving_goal_path, class: "btn btn--primary goals-index-btn" %>
+</div>
+
+<!-- 目標が0件のときの案内（ガイド画面とトーンを統一） -->
+<% if @goals.empty? %>
+  <div class="goals-empty-card">
+    <h2>ようこそ！まずは目標を作りましょう</h2>
+    <p>家族や友人と一緒に、1つの目標に向かって楽しく貯金を始められます。</p>
+    <div class="goals-empty-steps">
+      <span>1. 目標と期限を決める</span>
+      <span>→</span>
+      <span>2. メンバーを招待する</span>
+      <span>→</span>
+      <span>3. 入金を申請・確認</span>
+    </div>
+    <div class="goals-empty-actions">
+      <%= link_to "さっそく目標を作る", new_saving_goal_path, class: "btn btn--primary" %>
+      <%= link_to "使い方をくわしく見る", guide_path, class: "btn btn--secondary" %>
+    </div>
+  </div>
+<% end %>
+
+<!-- 2. 目標カード一覧（カード全体をクリック可能に） -->
+<div class="goals-grid">
+  <% @goals.each do |goal| %>
+    <% badge = { "recruiting" => "open", "achieved" => "achieved",
+                "canceled" => "closed", "expired" => "closed" }[goal.display_status.to_s] %>
+    
+    <%= link_to goal, class: "modern-goal-card" do %>
+      <!-- 上段：タイトルとステータスバッジ -->
+      <div class="modern-goal-card__head">
+        <h2 class="modern-goal-card__title"><%= goal.name %></h2>
+        <span class="badge badge--<%= badge %>"><%= t("goals.status.#{goal.display_status}", locale: :ja) %></span>
+      </div>
+
+      <!-- 中段：現在金額と達成率（％）、その下に太めの進捗バー -->
+      <div class="modern-goal-card__stats">
+        <div class="modern-goal-card__amounts">
+          <span class="modern-goal-card__current"><%= number_to_currency(goal.current_amount, unit: "円", precision: 0) %></span>
+          <span class="modern-goal-card__target">/ <%= number_to_currency(goal.target_amount, unit: "円", precision: 0) %></span>
+        </div>
+        <span class="modern-goal-card__percent"><%= goal.progress_percent %>%</span>
+      </div>
+
+      <div class="modern-goal-card__bar">
+        <div class="modern-goal-card__fill<%= " modern-goal-card__fill--done" if goal.achieved? %>"
+             style="width: <%= [goal.progress_percent, 100].min %>%"></div>
+      </div>
+
+      <!-- 下段：残り金額・期限・人数を綺麗に整理（途中改行を防止） -->
+      <div class="modern-goal-card__meta">
+        <span>残り <strong><%= number_to_currency(goal.remaining_amount, unit: "円", precision: 0) %></strong></span>
+        <div class="modern-goal-card__meta-right">
+          <span>期限 <%= goal.deadline %></span>
+          <span>・</span>
+          <span><%= @member_counts[goal.id] || 0 %>人</span>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<% if @pagy.pages > 1 %>
+  <div style="margin-top: 28px;">
+    <%== @pagy.series_nav %>
+  </div>
+<% end %>

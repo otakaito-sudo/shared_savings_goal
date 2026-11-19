@@ -1,0 +1,47 @@
+<div class="goal-form-card">
+  <div class="goal-form-card__header">
+    <h1>貯金目標の作成</h1>
+    <p>みんなで達成したい目標の名前や金額、期限を決めましょう。</p>
+  </div>
+
+  <%= form_with model: @goal, class: "goal-form" do |f| %>
+    <% if @goal.errors.any? %>
+      <ul class="flash-alert">
+        <% @goal.errors.full_messages.each do |m| %>
+          <li><%= m %></li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <div class="goal-form__group">
+      <%= f.label :name, "目標名" %>
+      <%= f.text_field :name, placeholder: "例：家族で沖縄旅行、新しい家電" %>
+    </div>
+
+    <div class="goal-form__group">
+      <%= f.label :purpose, "目的・メモ" %>
+      <%= f.text_field :purpose, placeholder: "例：来年の夏休みにみんなでいくため！" %>
+    </div>
+
+    <!-- 金額と期限を横並びにする -->
+    <div class="goal-form__row">
+      <div class="goal-form__group">
+        <%= f.label :target_amount, "目標金額" %>
+        <div class="input-with-unit">
+          <%= f.number_field :target_amount, placeholder: "100000", min: 1 %>
+          <span class="input-unit">円</span>
+        </div>
+      </div>
+
+      <div class="goal-form__group">
+        <%= f.label :deadline, "達成期限" %>
+        <%= f.date_field :deadline %>
+      </div>
+    </div>
+
+    <div class="goal-form__actions">
+      <%= f.submit "この内容で目標を作成する", class: "btn btn--primary goal-form__submit" %>
+      <%= link_to "キャンセル", saving_goals_path, class: "goal-form__cancel" %>
+    </div>
+  <% end %>
+</div>

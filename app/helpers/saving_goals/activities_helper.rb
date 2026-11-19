@@ -1,0 +1,2 @@
+module SavingGoals::ActivitiesHelper
+end

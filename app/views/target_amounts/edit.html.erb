@@ -1,0 +1,78 @@
+<% content_for :container_class, "container--wide" %>
+
+<section class="modern-target-editor">
+  <!-- 1. ヘッダーとルール案内 -->
+  <div class="target-editor__header">
+    <h1>目標金額を編集</h1>
+    <p class="target-editor__desc">
+      全体目標とメンバーごとの個人目標をまとめて設定します。<br>
+      個人目標の合計と全体目標を一致させ、現在の確認済み入金額（<strong><%= number_to_currency(@goal.current_amount, unit: "円", precision: 0) %></strong>）より大きく設定してください。
+    </p>
+  </div>
+
+  <% if @form_errors.any? %>
+    <div class="flash-alert" role="alert" style="margin-bottom: 24px;">
+      <ul style="margin: 0; padding-left: 20px;">
+        <% @form_errors.each do |error| %>
+          <li><%= error %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with url: saving_goal_target_amounts_path(@goal), method: :patch, class: "target-editor__form", data: { controller: "target-amounts", action: "input->target-amounts#update" } do %>
+    
+    <!-- 2. 全体目標（主役として強調枠に配置） -->
+    <div class="target-total-row">
+      <%= label_tag :target_amount, "全体目標", class: "target-total-row__label" %>
+      <div class="target-input-wrap target-input-wrap--large">
+        <%= number_field_tag :target_amount, @submitted_total.nil? ? @goal.target_amount : @submitted_total, min: 1, max: 100_000_000, step: 1, required: true, data: { target_amounts_target: "total" } %>
+        <span class="target-input-unit">円</span>
+      </div>
+    </div>
+
+    <!-- 3. 個人目標リスト -->
+    <div class="target-members-section">
+      <div class="target-members-header">
+        <h2>メンバーごとの個人目標</h2>
+        <span>現在 <%= @memberships.size %>人</span>
+      </div>
+
+      <div class="target-members-list">
+        <% @memberships.each do |membership| %>
+          <div class="target-member-row">
+            <div class="target-member-row__info">
+              <span class="target-member-row__name"><%= membership.user.name %> さん</span>
+              <% if membership.manager? %>
+                <span class="badge badge--open">リーダー</span>
+              <% else %>
+                <span class="badge badge--pending">メンバー</span>
+              <% end %>
+            </div>
+            <div class="target-input-wrap">
+              <%= number_field_tag "member_targets[#{membership.id}]", @submitted_members ? @submitted_members[membership.id.to_s] : membership.target_amount, id: "member_target_#{membership.id}", min: 0, max: 100_000_000, step: 1, required: true, data: { target_amounts_target: "member" } %>
+              <span class="target-input-unit">円</span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 4. リアルタイム集計結果 ＋ ワンクリック反映バー -->
+    <div class="target-summary-bar">
+      <p class="target-editor__summary" aria-live="polite" data-target-amounts-target="summary">
+        個人目標の合計と全体目標を確認してください。
+      </p>
+      <button type="button" class="target-apply-btn" data-action="target-amounts#applySum">
+        合計を全体目標に反映
+      </button>
+    </div>
+
+    <!-- 5. 保存・キャンセルボタン（高さをピタッと揃える） -->
+    <div class="target-editor__actions">
+      <%= submit_tag "この内容で保存する", class: "btn btn--primary target-save-btn" %>
+      <%= link_to "キャンセル", saving_goal_path(@goal), class: "target-cancel-link" %>
+    </div>
+
+  <% end %>
+</section>

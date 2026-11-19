@@ -24,6 +24,45 @@
   </head>
 
   <body>
-    <%= yield %>
+    <nav class="app-header">
+      <%= link_to root_path, class: "brand-link" do %>
+        <%= image_tag "logo.png", class: "brand-logo", alt: "" %>
+        共同貯金
+      <% end %>
+
+      <div class="nav-actions">
+        <% if logged_in? %>
+          <div class="user-menu">
+            <span class="nav-user">
+              <span class="nav-user__label">ログイン中：</span><span class="nav-user__name"><%= current_user.name %></span>
+              <svg class="nav-user__arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>            
+            <div class="user-menu__dropdown">
+              <%= link_to "プロフィール編集", edit_user_path(current_user), class: "user-menu__item" %>
+            </div>
+          </div>
+          <div class="nav-right">
+            <%= link_to "使い方", guide_path %>
+            <%= button_to "ログアウト", logout_path, method: :delete %>
+          </div>
+        <% else %>
+          <div class="nav-right">
+            <%= link_to "使い方", guide_path %>
+            <%= link_to "ログイン", login_path %>
+            <%= link_to "ユーザー登録", new_user_path %>
+          </div>
+        <% end %>
+      </div>
+    </nav>
+    
+    <% flash.each do |type, message| %>
+      <p class="flash-<%= type %>"><%= message %></p>
+    <% end %>
+    
+    <main class="container <%= yield(:container_class) %>">
+      <%= yield %>
+    </main>
   </body>
 </html>

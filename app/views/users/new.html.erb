@@ -1,0 +1,52 @@
+<% content_for :head do %>
+  <style>
+    body {
+      background-color: #FFF9EE;
+      background-image: url('<%= asset_path("login-bg.png") %>');
+      background-size: cover;
+      background-position: center bottom;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+  </style>
+<% end %>
+
+<div class="login-page-container">
+  <div class="modern-auth-card">
+    <div class="auth-header">
+      <p class="brand-text">共同貯金</p>
+      <p class="brand-subtext">みんなで目標に向かって貯めるアプリ</p>
+    </div>
+
+    <h1 class="auth-title">新規登録</h1>
+
+    <%= form_with model: @user, class: "auth-form" do |f| %>
+      <% if @user.errors.any? %>
+        <ul class="flash-alert" style="margin-bottom: 20px; font-size: 0.85rem;">
+          <% @user.errors.full_messages.each do |m| %>
+            <li><%= m %></li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.text_field :name, placeholder: "お名前（ニックネーム可）", class: "modern-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.email_field :email, placeholder: "メールアドレス", class: "modern-input" %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 24px;">
+        <%= f.password_field :password, placeholder: "パスワード", class: "modern-input" %>
+      </div>
+
+      <%= f.submit "アカウントを作成する", class: "modern-btn" %>
+    <% end %>
+
+    <div class="auth-footer">
+      <span class="text-gray">すでにアカウントをお持ちですか？</span>
+      <%= link_to "ログインはこちら", login_path, class: "register-link" %>
+    </div>
+  </div>
+</div>

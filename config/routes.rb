@@ -1,14 +1,37 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  root "saving_goals#index"
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  get "/login", to: "sessions#new"
+  get "guide", to: "pages#guide", as: :guide
+  post "/login", to: "sessions#create"
+  delete "/logout", to: "sessions#destroy"
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  resources :users, only: [ :new, :create, :edit, :update ]
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  resources :saving_goals, only: [ :index, :show, :new, :create ] do
+    resources :memberships, only: [ :create, :destroy ]
+    resources :invitations, only: [ :create ], module: :saving_goals
+    resources :deposits, only: [ :create ]
+    resources :invitations, only: [ :create, :destroy ], module: :saving_goals
+    resources :activities, only: [ :index ], module: :saving_goals
+    resource :target_amounts, only: [ :edit, :update ], controller: "target_amounts"
+  end
+
+  resources :deposits, only: [] do
+    member do
+      patch :confirm
+      patch :reject
+      patch :remand
+      patch :resubmit
+    end
+  end
+
+  resources :account_activations, only: [ :edit ]
+  resources :password_resets, only: [ :new, :create, :edit, :update ]
+
+  resources :invitations, only: [ :show ] do
+    post :accept, on: :member
+  end
+
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 end
