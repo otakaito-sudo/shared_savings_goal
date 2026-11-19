@@ -173,49 +173,75 @@
         <% end %>
 
         <turbo-frame id="deposits-page">
-          <div class="deposits-grid">
+          <div class="deposits-list">
             <% @deposits.each do |d| %>
               <% dep_badge = { "pending" => "pending", "confirmed" => "approved",
                               "rejected" => "rejected", "remanded" => "returned" }[d.status] %>
-              <div class="deposit-card">
-                <div class="deposit-card__info">
-                  <p>
-                    <span class="deposit-card__amount"><%= number_to_currency(d.request_amount, unit: "円", precision: 0) %></span>
-                    <span class="badge badge--<%= dep_badge %>"><%= t("deposits.status.#{d.status}", locale: :ja) %></span>
-                  </p>
-                  <p class="progress__label">
-                    <%= d.member.name %> さん
-                    <% if d.reviewer %> ・ 確認者 <%= d.reviewer.name %> さん<% end %>
-                    ・ <%= d.created_at.strftime("%m/%d") %>
-                  </p>
-                  <% if d.remanded? && d.review_comment.present? %>
-                    <p class="deposit-card__comment">差し戻し理由：<%= d.review_comment %></p>
+              
+              <div class="deposit-item">
+                <!-- 上段：金額・ステータス・申請者と、操作ボタン -->
+                <div class="deposit-item__main">
+                  <div class="deposit-item__info">
+                    <div class="deposit-item__header">
+                      <span class="deposit-item__amount"><%= number_to_currency(d.request_amount, unit: "円", precision: 0) %></span>
+                      <span class="badge badge--<%= dep_badge %>"><%= t("deposits.status.#{d.status}", locale: :ja) %></span>
+                    </div>
+                    <p class="deposit-item__meta">
+                      <%= d.member.name %> さん
+                      <% if d.reviewer %> ・ 確認者 <%= d.reviewer.name %> さん<% end %>
+                      ・ <%= d.created_at.strftime("%m/%d") %>
+                    </p>
+                  </div>
+
+                  <% if d.pending? && @membership&.manager? %>
+                    <div class="deposit-item__actions">
+                      <%= button_to "確認", confirm_deposit_path(d), method: :patch, class: "btn btn--primary btn--sm", data: { turbo_frame: "_top" } %>
+                      <%= button_to "却下", reject_deposit_path(d), method: :patch, class: "btn btn--ghost-danger btn--sm", data: { turbo_frame: "_top" } %>
+                      <label for="remand-toggle-<%= d.id %>" class="btn btn--muted btn--sm remand-trigger">
+                        差し戻し
+                      </label>
+                    </div>
                   <% end %>
                 </div>
 
-                <% if d.pending? && @membership&.manager? %>
-                  <div class="deposit-card__actions">
-                    <%= button_to "確認", confirm_deposit_path(d), method: :patch, class: "btn btn--primary" %>
-                    <%= button_to "却下", reject_deposit_path(d), method: :patch, class: "btn btn--muted" %>
-                    <details class="remand-box">
-                      <summary class="btn btn--muted">差し戻し</summary>
-                      <%= form_with url: remand_deposit_path(d), method: :patch do |f| %>
-                        <%= f.text_field :review_comment, placeholder: "差し戻し理由（必須）" %>
-                        <%= f.submit "差し戻す", class: "btn btn--muted" %>
-                      <% end %>
-                    </details>
+                <!-- 差し戻し理由の表示（差し戻し済みの場合） -->
+                <% if d.remanded? && d.review_comment.present? %>
+                  <div class="deposit-item__notice">
+                    <span class="deposit-item__notice-label">差し戻し理由</span>
+                    <p><%= d.review_comment %></p>
                   </div>
                 <% end %>
 
+                <!-- 下段1：差し戻し入力ドロワー（チェックボックスで開閉） -->
+                <% if d.pending? && @membership&.manager? %>
+                  <input type="checkbox" id="remand-toggle-<%= d.id %>" class="remand-checkbox" hidden>
+                  <div class="deposit-item__drawer">
+                    <%= form_with url: remand_deposit_path(d), method: :patch, class: "remand-form", data: { turbo_frame: "_top" } do |f| %>
+                      <%= f.text_field :review_comment, placeholder: "差し戻しの理由を入力（例：金額が間違っています）", required: true, class: "remand-form__input" %>
+                      <div class="remand-form__btns">
+                        <%= f.submit "差し戻しを確定", class: "btn btn--warning btn--sm" %>
+                        <label for="remand-toggle-<%= d.id %>" class="btn btn--muted btn--sm">キャンセル</label>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <!-- 下段2：再申請フォーム（本人の差し戻し分） -->
                 <% if d.remanded? && d.member == current_user %>
-                  <%= form_with url: resubmit_deposit_path(d), method: :patch, class: "deposit-card__resubmit" do |f| %>
-                    <%= f.number_field :request_amount, value: d.request_amount %>
-                    <%= f.submit "再申請", class: "btn btn--primary" %>
-                  <% end %>
+                  <div class="deposit-item__drawer deposit-item__drawer--open">
+                    <%= form_with url: resubmit_deposit_path(d), method: :patch, class: "remand-form", data: { turbo_frame: "_top" } do |f| %>
+                      <div class="resubmit-input-wrap">
+                        <%= f.number_field :request_amount, value: d.request_amount, min: 1, class: "remand-form__input" %>
+                        <span>円</span>
+                      </div>
+                      <%= f.submit "この金額で再申請", class: "btn btn--primary btn--sm" %>
+                    <% end %>
+                  </div>
                 <% end %>
               </div>
             <% end %>
           </div>
+
           <% if @deposit_pagy.pages > 1 %>
             <%== @deposit_pagy.series_nav %>
           <% end %>

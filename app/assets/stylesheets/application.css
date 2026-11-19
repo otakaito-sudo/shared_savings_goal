@@ -65,12 +65,7 @@ body {
 
 /* 進捗バー：太め（12px以上）＋％を必ず併記する */
 .progress { margin: 8px 0 4px; }
-.progress__bar {
-  height: 14px;
-  background: #E5E7EB;
-  border-radius: 999px;
-  overflow: hidden;
-}
+.progress__bar { overflow: hidden; }
 .progress__fill {
   height: 100%;
   background: #0E9F6E;
@@ -92,7 +87,6 @@ body {
 
 
 .goal-hero .progress__bar { height: 16px; }     /* ヒーローではさらに太く */
-.goal-hero__amount { font-size: 1.6rem; font-weight: 700; }
 .goal-hero__remaining { color: #6B7280; }
 
 /* 状態バッジ：アプリ全体で色を統一する（design-draft.md 5章） */
@@ -212,7 +206,6 @@ border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem;
   .detail-col--wide { grid-column: 1 / -1; }
 }
 
-.goals-grid { display: grid; gap: 16px; }
 .goals-grid .goal-card { margin-bottom: 0; }
 @media (min-width: 900px) {
   .goals-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
@@ -434,8 +427,6 @@ input:focus, textarea:focus {
 .bars { display: flex; align-items: flex-end; gap: 10px; height: 140px; margin-top: 8px; }
 .bars__col { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
 .bars__bar { width: 70%; max-width: 44px; min-height: 4px; background: linear-gradient(#FB923C, #EA580C); border-radius: 8px 8px 4px 4px; }
-.bars__label { font-size: .75rem; color: #9CA3AF; }
-
 .role-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0 12px; }
 .role-picker__label { font-weight: 700; margin: 12px 0 0; }
 .role-option { position: relative; display: flex; cursor: pointer; }
@@ -451,7 +442,6 @@ input:focus, textarea:focus {
 .target-editor { max-width: 700px; margin: 24px auto; padding: 24px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; }
 .target-editor__row { display: grid; grid-template-columns: minmax(130px, 1fr) minmax(120px, 220px); gap: 12px; align-items: center; margin: 12px 0; }
 .target-editor__row input { width: 100%; }
-.target-editor__summary { font-weight: 700; }
 .target-editor__errors { color: #991b1b; background: #fef2f2; padding: 8px 16px; border-radius: 8px; }
 .target-editor__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
 @media (max-width: 480px) { .target-editor__row { grid-template-columns: 1fr; gap: 4px; } }
@@ -833,10 +823,6 @@ input:focus, textarea:focus {
 }
 
 /* ページネーションと一覧の間の被りを解消 */
-.deposits-grid {
-  margin-bottom: 24px;
-}
-
 .pagy {
   margin-top: 48px;
   position: relative;
@@ -1250,16 +1236,6 @@ input:focus, textarea:focus {
   position: relative;
 }
 
-/* バーの両端だけ丸くする（overflow: visible にしたため個別に指定） */
-.share-bar--hero .share-bar__seg:first-child {
-  border-top-left-radius: 999px;
-  border-bottom-left-radius: 999px;
-}
-.share-bar--hero .share-bar__seg:last-child {
-  border-top-right-radius: 999px;
-  border-bottom-right-radius: 999px;
-}
-
 /* 各メンバーのバー部分 */
 .share-bar__seg {
   position: relative;
@@ -1333,10 +1309,7 @@ input:focus, textarea:focus {
   transform: translateX(-50%) translateY(0);
 }
 
-/* ============================================================
-   ヘッダーのログインユーザー表示＆ホバーでプロフィール編集表示
-   ============================================================ */
-/* ヘッダーのメニューが下に飛び出せるようにする */
+/* ヘッダーのログインユーザー表示とプロフィール編集メニュー */
 .app-header .nav-actions {
   overflow: visible !important;
 }
@@ -1349,171 +1322,56 @@ input:focus, textarea:focus {
 
 .app-header .nav-user {
   display: inline-flex;
-  align-items: baseline; /* 文字のベースライン（底辺）をピタッと揃える */
-  max-width: none !important;
-  background: #FFF7ED;
-  border: 1px solid #FED7AA;
-  color: #EA580C;
-  padding: 5px 14px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 800;
-  line-height: 1.2;
-  margin-right: 0 !important; /* 元の span の余白をリセット */
-}
-
-/* 「ログイン中：」と「名前」の間の不自然な余白を消す */
-.app-header .nav-user span {
-  margin-right: 0 !important;
-}
-
-.nav-user__label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #9A3412;
-}
-
-/* --- カーソルを合わせた時に出る「プロフィール編集」メニュー --- */
-.user-menu__dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  padding-top: 8px; /* バッジとメニューの間の透明な橋渡し（カーソルが外れて消えるのを防ぐ） */
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-4px);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  z-index: 50;
-}
-
-/* ホバーした時にフワッと表示 */
-.user-menu:hover .user-menu__dropdown {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.user-menu__item {
-  display: block;
-  background: #ffffff;
-  color: #374151 !important;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 10px 16px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  white-space: nowrap;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.user-menu__item:hover {
-  background: #FFF7ED;
-  color: #EA580C !important;
-  border-color: #FED7AA;
-}
-
-/* バッジの背景と枠線をなくし、洗練されたテキストリンク風にする */
-.app-header .nav-user {
-  display: inline-flex;
-  align-items: baseline;
-  max-width: none !important;
-  background: transparent !important; /* 背景色を透明に */
-  border: none !important;            /* 枠線を消去 */
-  border-radius: 8px;
-  color: #1F2937;                     /* 落ち着いた濃いグレー */
-  padding: 6px 10px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  line-height: 1.2;
-  margin-right: 0 !important;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-/* カーソルを合わせたときだけ、うっすら背景色をつけてクリック感を出す */
-.user-menu:hover .nav-user {
-  background-color: #F3F4F6 !important;
-  color: #EA580C;
-}
-
-.app-header .nav-user span {
-  margin-right: 0 !important;
-}
-
-.nav-user__label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #6B7280;
-}
-
-/* 下向き矢印（メニューがあることを示す） */
-.nav-user__arrow {
-  font-size: 0.75rem;
-  color: #9CA3AF;
-  margin-left: 4px !important;
-}
-
-/* ============================================================
-   ヘッダーのログインユーザー表示＆ドロップダウン（バランス調整版）
-   ============================================================ */
-.app-header .nav-actions {
-  overflow: visible !important;
-}
-
-.user-menu {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.app-header .nav-user {
-  display: inline-flex;
-  align-items: center; /* 文字と矢印の縦の中心をピタッと揃える */
+  align-items: center;
   gap: 2px;
   max-width: none !important;
   background: transparent !important;
   border: none !important;
   border-radius: 8px;
   color: #374151;
-  padding: 6px 10px;
-  font-size: 0.875rem; /* 14pxで統一 */
-  line-height: 1.4;
+  padding: 8px 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
   margin-right: 0 !important;
   transition: background-color 0.15s ease;
 }
 
 .user-menu:hover .nav-user {
   background-color: #F3F4F6 !important;
+  color: #EA580C;
 }
 
 .app-header .nav-user span {
   margin-right: 0 !important;
 }
 
-/* 「ログイン中：」と「名前」の統一感を出す */
 .nav-user__label {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #6B7280;
 }
 
 .nav-user__name {
+  font-size: 1rem;
   font-weight: 700;
-  color: #1F2937; /* オレンジではなく濃いグレーにして落ち着かせる */
+  color: #1F2937;
 }
 
-/* 矢印アイコン（ホバー時に少し下に動くアニメーション付き） */
 .nav-user__arrow {
+  width: 16px;
+  height: 16px;
   color: #6B7280;
-  margin-left: 4px;
+  margin-left: 6px;
+  transform: translateY(1px);
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .user-menu:hover .nav-user__arrow {
   color: #EA580C;
-  transform: translateY(1px);
+  transform: translateY(2px);
 }
 
-/* --- ドロップダウンメニュー（コンパクトで洗練されたサイズに） --- */
 .user-menu__dropdown {
   position: absolute;
   top: 100%;
@@ -1538,8 +1396,8 @@ input:focus, textarea:focus {
   color: #374151 !important;
   border: 1px solid #E5E7EB;
   border-radius: 10px;
-  padding: 8px 14px; /* 余白をスリムに調整 */
-  font-size: 0.825rem; /* 文字も少し控えめにしてバランスを取る */
+  padding: 10px 16px;
+  font-size: 0.9rem;
   font-weight: 600;
   white-space: nowrap;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
@@ -1551,95 +1409,6 @@ input:focus, textarea:focus {
   color: #EA580C !important;
   border-color: #FED7AA;
 }
-
-/* ============================================================
-   ヘッダーのログインユーザー表示（サイズアップ＆高さ完全一致版）
-   ============================================================ */
-.app-header .nav-user {
-  display: inline-flex;
-  align-items: center;
-  max-width: none !important;
-  background: transparent !important;
-  border: none !important;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 1rem; /* 14px → 16px にサイズアップ */
-  line-height: 1;
-  margin-right: 0 !important;
-  transition: background-color 0.15s ease;
-}
-
-.user-menu:hover .nav-user {
-  background-color: #F3F4F6 !important;
-}
-
-.app-header .nav-user span {
-  margin-right: 0 !important;
-}
-
-/* 「ログイン中：」と「名前」のサイズ・行の高さを完全に揃える */
-.nav-user__label {
-  font-size: 0.95rem; /* 名前とほぼ同じ大きさに揃えて高さズレを解消 */
-  font-weight: 500;
-  color: #6B7280;
-}
-
-.nav-user__name {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1F2937;
-}
-
-/* 矢印アイコンも文字に合わせて少し大きくし、高さを微調整 */
-.nav-user__arrow {
-  width: 16px;
-  height: 16px;
-  color: #6B7280;
-  margin-left: 6px;
-  transform: translateY(1px); /* 視覚的な中心にピタッと合わせる */
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.user-menu:hover .nav-user__arrow {
-  color: #EA580C;
-  transform: translateY(2px);
-}
-
-/* ドロップダウンも全体のサイズ感に合わせて少しだけ調整 */
-.user-menu__item {
-  display: block;
-  background: #ffffff;
-  color: #374151 !important;
-  border: 1px solid #E5E7EB;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-/* 色付きバーと背景グレーの太さを完全に同じ16pxに統一 */
-.share-bar--hero {
-  height: 16px !important;
-  border-radius: 999px !important;
-  background: #F3F4F6 !important;
-}
-
-.share-bar--hero .share-bar__seg {
-  height: 16px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  background-clip: border-box !important;
-}
-
-/* 当たり判定だけを上下に広げる（見た目には一切影響しない） */
-.share-bar--hero .share-bar__seg {
-  position: relative;
-}
-/* 既存の ::before (しっぽ) と干渉しないよう、バー自体の当たり判定はそのまま16pxで端まで反応 */
-
-
 /* ============================================================
    進捗バー全体を太くして、色付き部分とグレーの太さを統一
    ============================================================ */
@@ -2609,14 +2378,6 @@ input:focus, textarea:focus {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.target-input-wrap--large input {
-  font-size: 1.25rem;
-  font-weight: 800;
-  border-color: #FDBA74;
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
-
 .target-input-wrap input:focus {
   outline: none;
   border-color: #EA580C;
@@ -2733,7 +2494,6 @@ input:focus, textarea:focus {
 
 /* 保存・キャンセルアクション */
 .target-editor__actions {
-  display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
@@ -2870,4 +2630,181 @@ input:focus, textarea:focus {
   font-weight: 700;
   text-align: right;
   word-break: break-all;
+}
+
+.deposit-card__actions { flex-wrap: wrap; }
+.remand-box[open] { flex: 1 1 100%; }
+.remand-box form { width: 100%; }
+
+/* リスト全体 */
+.deposits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* カード本体 */
+.deposit-item {
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 16px 20px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.deposit-item:hover {
+  border-color: #D1D5DB;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* 上段：情報とボタンの横並び */
+.deposit-item__main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.deposit-item__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.deposit-item__amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.deposit-item__meta {
+  font-size: 0.85rem;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* 右側のボタングループ */
+.deposit-item__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deposit-item__actions form {
+  margin: 0;
+}
+
+/* ボタンのバリエーション */
+.btn--sm {
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+/* 却下ボタン（控えめな赤系） */
+.btn--ghost-danger {
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+}
+.btn--ghost-danger:hover {
+  background: #FEE2E2;
+}
+
+/* 差し戻し確定ボタン（アンバー系） */
+.btn--warning {
+  background: #D97706;
+  color: #ffffff;
+  border: none;
+}
+.btn--warning:hover {
+  background: #B45309;
+}
+
+/* 差し戻し理由の表示ボックス */
+.deposit-item__notice {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #FFFBEB;
+  border-left: 3px solid #F59E0B;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #92400E;
+}
+.deposit-item__notice-label {
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: block;
+  margin-bottom: 2px;
+}
+.deposit-item__notice p {
+  margin: 0;
+}
+
+/* 下段：差し戻し・再申請の入力ドロワー */
+.deposit-item__drawer {
+  display: none;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #E5E7EB;
+}
+
+/* チェックボックスON、または最初から開くクラスで表示 */
+.remand-checkbox:checked + .deposit-item__drawer,
+.deposit-item__drawer--open {
+  display: block;
+  animation: slideDown 0.18s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* フォーム内のレイアウト */
+.remand-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.remand-form__input {
+  flex: 1 1 240px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  background: #F9FAFB;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.remand-form__input:focus {
+  outline: none;
+  border-color: #EA580C;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+}
+
+.remand-form__btns {
+  display: flex;
+  gap: 6px;
+}
+
+.resubmit-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 160px;
+}
+
+/* フォームが開いている（チェックボックスがONの）間は「差し戻し」ボタンを消す */
+.deposit-item:has(.remand-checkbox:checked) .remand-trigger {
+  display: none;
 }

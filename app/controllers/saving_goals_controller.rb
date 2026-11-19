@@ -45,10 +45,9 @@ class SavingGoalsController < ApplicationController
 
   def create
     @goal=SavingGoal.new(goal_params.merge(creator: current_user))
-    @goal.memberships.create!(user: current_user, role: :manager, target_amount: @goal.target_amount)
     ActiveRecord::Base.transaction do
       @goal.save!
-      @goal.memberships.create!(user: current_user, role: :manager)
+      @goal.memberships.create!(user: current_user, role: :manager, target_amount: @goal.target_amount)
     end
     redirect_to @goal, notice: "貯金目標を作成しました"
   rescue ActiveRecord::RecordInvalid
